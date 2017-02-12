@@ -1,0 +1,19 @@
+{
+  "name": "tango-tic-tac-toe-server",
+  "version": "1.0.0",
+  "description": "Server to run the back end for Tango-C-Tic_Tac_Toe",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sjfricke/Tango-C-Tic_Tac_Toe.git"
+  },
+  "author": "Spencer Fricke",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sjfricke/Tango-C-Tic_Tac_Toe/issues"
+  },
+  "homepage": "https://github.com/sjfricke/Tango-C-Tic_Tac_Toe#readme"
+}
