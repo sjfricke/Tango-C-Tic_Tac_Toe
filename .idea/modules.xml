@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Tango-C-Tic_Tac_Toe.iml" filepath="$PROJECT_DIR$/Tango-C-Tic_Tac_Toe.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/cpp_example_util/app/cpp_example_util.iml" filepath="$PROJECT_DIR$/cpp_example_util/app/cpp_example_util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Tango-C-Tic_Tac_Toe.iml" filepath="$PROJECT_DIR$/.idea/modules/Tango-C-Tic_Tac_Toe.iml" />
     </modules>
   </component>
 </project>
