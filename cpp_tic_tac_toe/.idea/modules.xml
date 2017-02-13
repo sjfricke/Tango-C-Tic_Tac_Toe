@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/cpp_augmented_reality_example.iml" filepath="$PROJECT_DIR$/cpp_augmented_reality_example.iml" />
       <module fileurl="file://$PROJECT_DIR$/../cpp_example_util/app/cpp_example_util.iml" filepath="$PROJECT_DIR$/../cpp_example_util/app/cpp_example_util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cpp_tic_tac_toe.iml" filepath="$PROJECT_DIR$/cpp_tic_tac_toe.iml" />
     </modules>
   </component>
 </project>
