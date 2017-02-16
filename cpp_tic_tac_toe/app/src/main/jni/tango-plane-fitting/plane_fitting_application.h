@@ -144,8 +144,8 @@ class PlaneFittingApplication {
   // Render objects
   tango_gl::VideoOverlay* video_overlay_;
   PointCloudRenderer* point_cloud_renderer_;
-  tango_gl::Cube* cube_;
-
+  tango_gl::Cube* cube_[10];
+  int cube_count;
   // The dimensions of the render window.
   float screen_width_;
   float screen_height_;

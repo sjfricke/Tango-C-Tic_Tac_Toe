@@ -263,9 +263,14 @@ void PlaneFittingApplication::OnSurfaceCreated() {
   video_overlay_ = new tango_gl::VideoOverlay();
   video_overlay_->SetDisplayRotation(display_rotation_);
   point_cloud_renderer_ = new PointCloudRenderer();
-  cube_ = new tango_gl::Cube();
-  cube_->SetScale(glm::vec3(kCubeScale, kCubeScale, kCubeScale));
-  cube_->SetColor(0.7f, 0.7f, 0.7f);
+  cube_count = 0;
+
+  for (int i = 0; i < 10; i ++) {
+    cube_[i] = new tango_gl::Cube();
+    cube_[i]->SetScale(glm::vec3(kCubeScale, kCubeScale, kCubeScale));
+    cube_[i]->SetColor(0.0f + (float)i, 0.5f, 1.0f - (float)i);
+  }
+
 
   is_gl_initialized_ = true;
 }
@@ -356,16 +361,17 @@ void PlaneFittingApplication::GLRender(
   }
 
   glDisable(GL_BLEND);
-
-  cube_->Render(projection_matrix_ar_, color_camera_T_area_description);
+  for (int i = 0; i < 10; i ++) {
+    cube_[i]->Render(projection_matrix_ar_, color_camera_T_area_description);
+  }
 }
 
 void PlaneFittingApplication::DeleteResources() {
   delete video_overlay_;
-  delete cube_;
+  for (int i = 0; i < 10; i ++) { delete cube_[i]; }
   delete point_cloud_renderer_;
   video_overlay_ = nullptr;
-  cube_ = nullptr;
+  for (int i = 0; i < 10; i ++) { cube_[i] = nullptr; }
   point_cloud_renderer_ = nullptr;
 }
 
@@ -476,10 +482,15 @@ void PlaneFittingApplication::OnTouchEvent(float x, float y) {
   rotation_matrix[2] = normal_Z;
   const glm::quat rotation = glm::toQuat(rotation_matrix);
 
-  cube_->SetRotation(rotation);
-  cube_->SetPosition(glm::vec3(area_description_position) +
-                     plane_normal * kCubeScale);
+  cube_[cube_count]->SetRotation(rotation);
+  cube_[cube_count]->SetPosition(glm::vec3(area_description_position) +
+                       plane_normal * kCubeScale);
+  cube_count++;
+
+  if (cube_count >= 10) {cube_count = 0;}
+
 }
+
 
 glm::mat4 PlaneFittingApplication::GetAreaDescriptionTDepthTransform(
     double timestamp) {
