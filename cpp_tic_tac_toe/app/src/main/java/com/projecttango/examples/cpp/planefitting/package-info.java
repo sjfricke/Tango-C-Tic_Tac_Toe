@@ -15,7 +15,7 @@
  */
 
 /**
- * Native JNI augmented reality example.
+ * Native JNI motion tracking example.
  */
 
-package com.projecttango.examples.cpp.augmentedreality;
+package com.projecttango.examples.cpp.planefitting;

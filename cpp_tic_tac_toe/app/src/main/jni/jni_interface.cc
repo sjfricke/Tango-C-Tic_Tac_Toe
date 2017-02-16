@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Google Inc. All Rights Reserved.
+ * Copyright 2015 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,73 +14,68 @@
  * limitations under the License.
  */
 
-#define GLM_FORCE_RADIANS
-
-#include <android/asset_manager.h>
-#include <android/asset_manager_jni.h>
-
 #include <jni.h>
-#include <tango-augmented-reality/augmented_reality_app.h>
 
-static tango_augmented_reality::AugmentedRealityApp app;
+#include "tango-plane-fitting/plane_fitting_application.h"
+
+static tango_plane_fitting::PlaneFittingApplication app;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-jint JNI_OnLoad(JavaVM* vm, void*) {
-  // We need to store a reference to the Java VM so that we can call into the
-  // Java layer to trigger rendering.
-  app.SetJavaVM(vm);
-  return JNI_VERSION_1_6;
+
+JNIEXPORT void JNICALL
+Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_onCreate(
+    JNIEnv* env, jobject, jobject activity) {
+  app.OnCreate(env, activity);
 }
 
 JNIEXPORT void JNICALL
-Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_onCreate(
-    JNIEnv* env, jobject, jobject activity, int display_orientation) {
-  app.OnCreate(env, activity, display_orientation);
-}
-
-JNIEXPORT void JNICALL
-Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_onTangoServiceConnected(
-    JNIEnv* env, jobject, jobject iBinder) {
-  app.OnTangoServiceConnected(env, iBinder);
-}
-
-JNIEXPORT void JNICALL
-Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_onPause(
+Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_onPause(
     JNIEnv*, jobject) {
   app.OnPause();
 }
 
 JNIEXPORT void JNICALL
-Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_onDestroy(
-    JNIEnv*, jobject) {
-  app.OnDestroy();
+Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_onTangoServiceConnected(
+    JNIEnv* env, jobject /*obj*/, jobject binder) {
+  app.OnTangoServiceConnected(env, binder);
 }
 
 JNIEXPORT void JNICALL
-Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_onGlSurfaceCreated(
-    JNIEnv* env, jobject, jobject j_asset_manager) {
-  AAssetManager* aasset_manager = AAssetManager_fromJava(env, j_asset_manager);
-  app.OnSurfaceCreated(aasset_manager);
+Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_onGlSurfaceCreated(
+    JNIEnv* /*env*/, jobject /*obj*/) {
+  app.OnSurfaceCreated();
 }
 
 JNIEXPORT void JNICALL
-Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_onGlSurfaceChanged(
-    JNIEnv*, jobject, jint width, jint height) {
+Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_setRenderDebugPointCloud(
+    JNIEnv* /*env*/, jobject /*obj*/, jboolean on) {
+  app.SetRenderDebugPointCloud(on);
+}
+
+JNIEXPORT void JNICALL
+Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_onGlSurfaceChanged(
+    JNIEnv* /*env*/, jobject /*obj*/, jint width, jint height) {
   app.OnSurfaceChanged(width, height);
 }
 
 JNIEXPORT void JNICALL
-Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_onGlSurfaceDrawFrame(
-    JNIEnv*, jobject) {
+Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_onGlSurfaceDrawFrame(
+    JNIEnv* /*env*/, jobject /*obj*/) {
   app.OnDrawFrame();
 }
 
 JNIEXPORT void JNICALL
-Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_onConfigurationChanged(
-    JNIEnv*, jobject, int display_orientation) {
-  app.OnDeviceRotationChanged(display_orientation);
+Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_onTouchEvent(
+    JNIEnv* /*env*/, jobject /*obj*/, jfloat x, jfloat y) {
+  app.OnTouchEvent(x, y);
+}
+
+JNIEXPORT void JNICALL
+Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_onDisplayChanged(
+    JNIEnv* /*env*/, jobject /*obj*/, jint display_rotation) {
+  app.OnDisplayChanged(display_rotation);
 }
 
 #ifdef __cplusplus

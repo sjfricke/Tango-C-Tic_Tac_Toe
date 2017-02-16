@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Google Inc. All Rights Reserved.
+ * Copyright 2015 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.projecttango.examples.cpp.augmentedreality;
+package com.projecttango.examples.cpp.planefitting;
 
 import android.app.Activity;
 import android.content.res.AssetManager;
@@ -34,16 +34,15 @@ public class TangoJNINative {
         TangoInitializationHelper.ARCH_ERROR) {
       Log.e("TangoJNINative", "ERROR! Unable to load libtango_client_api.so!");
     }
-    System.loadLibrary("cpp_augmented_reality_example");
+    System.loadLibrary("cpp_plane_fitting_example");
   }
 
   /**
    * Interfaces to native OnCreate function.
    *
    * @param callerActivity the caller activity of this function.
-   * @param activityOrientation orientation of the display.
    */
-  public static native void onCreate(Activity callerActivity, int activityOrientation);
+  public static native void onCreate(Activity callerActivity);
 
   /**
    * Called when the Tango service is connected successfully.
@@ -58,27 +57,22 @@ public class TangoJNINative {
   public static native void onPause();
 
   /**
-   * Signal that the activity has been destroyed and remove any cached references.
-   */
-  public static native void onDestroy();
-
-  /**
    * Allocate OpenGL resources for rendering.
    */
-  public static native void onGlSurfaceCreated(AssetManager assetManager);
+  public static native void onGlSurfaceCreated();
 
-  /**
-   * Setup the view port width and height.
-   */
+  // Display debug colors on point cloud.
+  public static native void setRenderDebugPointCloud(boolean debugRender);
+
+  // Setup the view port width and height.
   public static native void onGlSurfaceChanged(int width, int height);
 
-  /**
-   * Main onGlSurfaceDrawFrame loop.
-   */
+  // Main render loop.
   public static native void onGlSurfaceDrawFrame();
 
-  /**
-   * Configuration changed callback, called when screen rotates.
-   */
-  public static native void onConfigurationChanged(int displayOrientation);
+  // Respond to a touch event.
+  public static native void onTouchEvent(float x, float y);
+
+  // Respond to a display change.
+  public static native void onDisplayChanged(int displayRotation);
 }
