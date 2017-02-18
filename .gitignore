@@ -39,6 +39,9 @@ captures/
 .idea/gradle.xml
 .idea/libraries
 
+cpp_tic_tac_toe/.idea/*
+.idea/*
+
 # Keystore files
 *.jks
 
