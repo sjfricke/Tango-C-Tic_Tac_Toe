@@ -22,6 +22,7 @@ import android.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.hardware.Camera;
 import android.hardware.display.DisplayManager;
 import android.opengl.GLSurfaceView;
@@ -160,7 +161,7 @@ public class MainActivity extends Activity {
 
     mGLView.setEGLContextClientVersion(2);
     // Configure the OpenGL renderer.
-    mRenderer = new GLSurfaceRenderer(this);
+    mRenderer = new GLSurfaceRenderer(this, getAssets());
     mGLView.setRenderer(mRenderer);
   }
 
@@ -212,8 +213,8 @@ public class MainActivity extends Activity {
     unbindService(mTangoServiceConnection);
   }
 
-  public void surfaceCreated() {
-    TangoJNINative.onGlSurfaceCreated();
+  public void surfaceCreated(AssetManager mAssetManager) {
+    TangoJNINative.onGlSurfaceCreated(mAssetManager);
     // Update the last saved settings after the surface is created.
     Map<String, ?> allKeys = mPreferences.getAll();
     Iterator i = allKeys.entrySet().iterator();

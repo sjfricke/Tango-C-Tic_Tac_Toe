@@ -59,7 +59,7 @@ public class TangoJNINative {
   /**
    * Allocate OpenGL resources for rendering.
    */
-  public static native void onGlSurfaceCreated();
+  public static native void onGlSurfaceCreated(AssetManager assetManager);
 
   // Display debug colors on point cloud.
   public static native void setRenderDebugPointCloud(boolean debugRender);

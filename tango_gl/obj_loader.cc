@@ -15,12 +15,25 @@
  */
 #include <string>
 
+#include <android/asset_manager.h>
+#include <unistd.h>
 #include "tango-gl/obj_loader.h"
 
 namespace tango_gl {
-bool obj_loader::LoadOBJData(const char* path, std::vector<GLfloat>& vertices,
-                             std::vector<GLushort>& indices) {
-  FILE* file = fopen(path, "r");
+  bool obj_loader::LoadOBJData(AAssetManager* mgr, const char* path, std::vector<GLfloat>& vertices,
+                               std::vector<GLushort>& indices) {
+
+  AAsset* asset = AAssetManager_open(mgr, path, AASSET_MODE_STREAMING);
+  if (asset == NULL) {
+    LOGE("Error opening asset %s", path);
+    return false;
+  }
+  off_t length;
+  off_t start;
+  int fd = AAsset_openFileDescriptor(asset, &start, &length);
+  lseek(fd, start, SEEK_CUR);
+  FILE* file = fdopen(fd, "r");
+
   if (file == NULL) {
     LOGE("Failed to open file: %s", path);
     return false;
@@ -29,7 +42,10 @@ bool obj_loader::LoadOBJData(const char* path, std::vector<GLfloat>& vertices,
   while (1) {
     char lineHeader[128];
     int res = fscanf(file, "%s", lineHeader);
-    if (res == EOF) break;
+    if (res == EOF) {
+      int a = 4;
+      break;
+    }
     if (strcmp(lineHeader, "v") == 0) {
       GLfloat vertex[3];
       int matches =
@@ -52,12 +68,15 @@ bool obj_loader::LoadOBJData(const char* path, std::vector<GLfloat>& vertices,
       indices.push_back(vertexIndex[0] - 1);
       indices.push_back(vertexIndex[1] - 1);
       indices.push_back(vertexIndex[2] - 1);
+    } else if (strncmp(lineHeader, "DONE",4) == 0) {
+      break;
     } else {
       char comments_buffer[1000];
       fgets(comments_buffer, 1000, file);
     }
   }
   fclose(file);
+  AAsset_close(asset);
   return true;
 }
 

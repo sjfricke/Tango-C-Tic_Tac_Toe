@@ -16,6 +16,7 @@
 
 package com.projecttango.examples.cpp.planefitting;
 
+import android.content.res.AssetManager;
 import android.opengl.GLSurfaceView;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -26,8 +27,10 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class GLSurfaceRenderer implements GLSurfaceView.Renderer {
     private MainActivity mMainActivity;
+    private AssetManager mAssetManager;
 
-    public GLSurfaceRenderer(MainActivity mainActivity) {
+    public GLSurfaceRenderer(MainActivity mainActivity, AssetManager assetManager){
+        mAssetManager = assetManager;
         mMainActivity = mainActivity;
     }
 
@@ -43,6 +46,6 @@ public class GLSurfaceRenderer implements GLSurfaceView.Renderer {
 
     // Called when the surface is created or recreated.
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        mMainActivity.surfaceCreated();
+        mMainActivity.surfaceCreated(mAssetManager);
     }
 }

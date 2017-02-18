@@ -26,6 +26,8 @@
 #include <tango-gl/video_overlay.h>
 #include <tango-gl/obj_loader.h>
 
+#include <android/asset_manager.h>
+
 #include "tango-plane-fitting/point_cloud_renderer.h"
 
 namespace tango_plane_fitting {
@@ -66,7 +68,7 @@ class PlaneFittingApplication {
   void OnTangoServiceConnected(JNIEnv* env, jobject binder);
 
   // Create OpenGL state and connect to the color camera texture.
-  void OnSurfaceCreated();
+  void OnSurfaceCreated(AAssetManager* aasset_manager);
 
   // Configure whether to display depth data for debugging.
   void SetRenderDebugPointCloud(bool on);

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+#include <android/asset_manager.h>
+#include <android/asset_manager_jni.h>
+
 #include <jni.h>
 
 #include "tango-plane-fitting/plane_fitting_application.h"
@@ -44,8 +47,9 @@ Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_onTangoServiceCon
 
 JNIEXPORT void JNICALL
 Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_onGlSurfaceCreated(
-    JNIEnv* /*env*/, jobject /*obj*/) {
-  app.OnSurfaceCreated();
+    JNIEnv* env, jobject, jobject j_asset_manager) {
+    AAssetManager* aasset_manager = AAssetManager_fromJava(env, j_asset_manager);
+    app.OnSurfaceCreated(aasset_manager);
 }
 
 JNIEXPORT void JNICALL

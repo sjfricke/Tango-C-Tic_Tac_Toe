@@ -19,6 +19,7 @@
 
 #include <vector>
 
+#include <android/asset_manager.h>
 #include "tango-gl/util.h"
 
 namespace tango_gl {
@@ -54,7 +55,7 @@ namespace obj_loader {
 //  tango_gl::obj_loader::LoadOBJData("/sdcard/model.obj", vertices, normals);
 //  mesh->SetVertices(vertices, normals);
 
-bool LoadOBJData(const char* path, std::vector<GLfloat>& vertices,
+bool LoadOBJData(AAssetManager* mgr, const char* path, std::vector<GLfloat>& vertices,
                  std::vector<GLushort>& indices);
 
 bool LoadOBJData(const char* path, std::vector<GLfloat>& vertices,
