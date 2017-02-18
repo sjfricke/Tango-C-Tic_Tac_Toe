@@ -35,7 +35,8 @@ LOCAL_SRC_FILES := jni_interface.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/shaders.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/transform.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/util.cc \
-                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/video_overlay.cc
+                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/video_overlay.cc \
+                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/obj_loader.cc
 LOCAL_LDLIBS := -lGLESv2 -llog -L$(SYSROOT)/usr/lib
 include $(BUILD_SHARED_LIBRARY)
 

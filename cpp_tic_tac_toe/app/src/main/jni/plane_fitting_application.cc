@@ -28,6 +28,32 @@
 namespace tango_plane_fitting {
 
 namespace {
+
+    static const GLfloat const_vertices[] = {
+            -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, -1.0f,
+            1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f,
+            -1.0f, 1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f,
+            1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, 1.0f,
+            -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
+            1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,
+            1.0f,  1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f,
+            1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f,
+            1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f};
+
+    static const GLfloat const_normals[] = {
+            0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+            1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+            0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+            1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,
+            -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, -1.0f,
+            0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,
+            -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+            0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+            1.0f,  0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,
+            0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f};
+
+
 // The minimum Tango Core version required from this application.
 constexpr int kTangoCoreMinimumVersion = 9377;
 constexpr float kCubeScale = 0.05f;
@@ -263,13 +289,17 @@ void PlaneFittingApplication::OnSurfaceCreated() {
   video_overlay_ = new tango_gl::VideoOverlay();
   video_overlay_->SetDisplayRotation(display_rotation_);
   point_cloud_renderer_ = new PointCloudRenderer();
-  cube_count = 0;
 
-  for (int i = 0; i < 10; i ++) {
-    cube_[i] = new tango_gl::Cube();
-    cube_[i]->SetScale(glm::vec3(kCubeScale, kCubeScale, kCubeScale));
-    cube_[i]->SetColor(0.0f + (float)i, 0.5f, 1.0f - (float)i);
-  }
+  c_object = new tango_gl::Mesh();
+  c_object->SetShader(true);
+
+  std::vector<GLfloat> vertices;
+  std::vector<GLushort> indices;
+  tango_gl::obj_loader::LoadOBJData("../assets/star.obj", vertices, indices);
+  c_object->SetVertices(vertices, indices);
+
+  c_object->SetScale(glm::vec3(kCubeScale, kCubeScale, kCubeScale));
+  c_object->SetColor(1.0f, 1.0f, 0.0f); //yellow
 
 
   is_gl_initialized_ = true;
@@ -361,17 +391,17 @@ void PlaneFittingApplication::GLRender(
   }
 
   glDisable(GL_BLEND);
-  for (int i = 0; i < 10; i ++) {
-    cube_[i]->Render(projection_matrix_ar_, color_camera_T_area_description);
-  }
+
+  c_object->Render(projection_matrix_ar_, color_camera_T_area_description);
+
 }
 
 void PlaneFittingApplication::DeleteResources() {
   delete video_overlay_;
-  for (int i = 0; i < 10; i ++) { delete cube_[i]; }
+  delete c_object;
   delete point_cloud_renderer_;
   video_overlay_ = nullptr;
-  for (int i = 0; i < 10; i ++) { cube_[i] = nullptr; }
+  c_object = nullptr;
   point_cloud_renderer_ = nullptr;
 }
 
@@ -482,12 +512,9 @@ void PlaneFittingApplication::OnTouchEvent(float x, float y) {
   rotation_matrix[2] = normal_Z;
   const glm::quat rotation = glm::toQuat(rotation_matrix);
 
-  cube_[cube_count]->SetRotation(rotation);
-  cube_[cube_count]->SetPosition(glm::vec3(area_description_position) +
+    c_object->SetRotation(rotation);
+    c_object->SetPosition(glm::vec3(area_description_position) +
                        plane_normal * kCubeScale);
-  cube_count++;
-
-  if (cube_count >= 10) {cube_count = 0;}
 
 }
 

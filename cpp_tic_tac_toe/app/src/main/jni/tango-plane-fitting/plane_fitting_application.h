@@ -24,6 +24,7 @@
 #include <tango-gl/cube.h>
 #include <tango-gl/util.h>
 #include <tango-gl/video_overlay.h>
+#include <tango-gl/obj_loader.h>
 
 #include "tango-plane-fitting/point_cloud_renderer.h"
 
@@ -144,8 +145,9 @@ class PlaneFittingApplication {
   // Render objects
   tango_gl::VideoOverlay* video_overlay_;
   PointCloudRenderer* point_cloud_renderer_;
-  tango_gl::Cube* cube_[10];
-  int cube_count;
+  tango_gl::Mesh* c_object;
+    //tango_gl::Cube* cube_[10];
+  //int cube_count;
   // The dimensions of the render window.
   float screen_width_;
   float screen_height_;
