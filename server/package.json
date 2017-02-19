@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/sjfricke/Tango-C-Tic_Tac_Toe/issues"
   },
-  "homepage": "https://github.com/sjfricke/Tango-C-Tic_Tac_Toe#readme"
+  "homepage": "https://github.com/sjfricke/Tango-C-Tic_Tac_Toe#readme",
+  "dependencies": {
+    "websocket": "^1.0.24"
+  }
 }
