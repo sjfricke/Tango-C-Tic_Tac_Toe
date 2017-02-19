@@ -22,17 +22,54 @@
 #include <tango-gl/conversions.h>
 #include <tango-gl/util.h>
 
+#include "easywsclient.hpp"
+#include <assert.h>
+#include <stdio.h>
+#include <string>
+#include <memory>
+
 #include "tango-plane-fitting/plane_fitting.h"
 #include <tango_support_api.h>
+#include <android/asset_manager.h>
+#include <tango-plane-fitting/plane_fitting_application.h>
+
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 namespace tango_plane_fitting {
 
 namespace {
 
-    static const GLfloat const_vertices[] = {0.007409f,-0.312453f,0.557977f,0.426503f,-0.323437f,0.478387f,0.425393f,0.396185f,0.358636f,0.006285f,0.413419f,0.438271f,0.007409f,-0.312453f,0.557977f,0.425393f,0.396185f,0.358636f,-0.404714f,-0.325263f,0.474925f,0.007409f,-0.312453f,0.557977f,0.006285f,0.413419f,0.438271f,-0.405824f,0.394358f,0.355172f,-0.404714f,-0.325263f,0.474925f,0.006285f,0.413419f,0.438271f,1.19977f,-1.39288f,-0.044954f,0.011301f,-0.945519f,-0.04662f,0.011644f,-0.085248f,-0.596585f,0.922539f,-0.399798f,-0.038857f,1.19977f,-1.39288f,-0.044954f,0.011644f,-0.085248f,-0.596585f,1.19977f,-1.39288f,-0.044954f,0.007069f,-0.093441f,0.522074f,0.011301f,-0.945519f,-0.04662f,0.922539f,-0.399798f,-0.038857f,0.007069f,-0.093441f,0.522074f,1.19977f,-1.39288f,-0.044954f,0.922539f,-0.399798f,-0.038857f,0.011644f,-0.085248f,-0.596585f,1.61449f,0.389179f,-0.030228f,0.922539f,-0.399798f,-0.038857f,1.61449f,0.389179f,-0.030228f,0.007069f,-0.093441f,0.522074f,-1.16889f,-1.39809f,-0.054822f,0.007069f,-0.093441f,0.522074f,-0.89614f,-0.403794f,-0.046434f,0.011301f,-0.945519f,-0.04662f,0.007069f,-0.093441f,0.522074f,-1.16889f,-1.39809f,-0.054822f,-0.89614f,-0.403794f,-0.046434f,0.007069f,-0.093441f,0.522074f,-1.59164f,0.382134f,-0.043585f,0.007069f,-0.093441f,0.522074f,0.608063f,0.480712f,-0.033735f,0.006014f,1.39809f,-0.02954f,-0.58564f,0.478089f,-0.038709f,0.007069f,-0.093441f,0.522074f,0.006014f,1.39809f,-0.02954f,1.61449f,0.389179f,-0.030228f,0.608063f,0.480712f,-0.033735f,0.007069f,-0.093441f,0.522074f,-1.59164f,0.382134f,-0.043585f,0.007069f,-0.093441f,0.522074f,-0.58564f,0.478089f,-0.038709f,0.011301f,-0.945519f,-0.04662f,-1.16889f,-1.39809f,-0.054822f,0.011644f,-0.085248f,-0.596585f,-1.16889f,-1.39809f,-0.054822f,-0.89614f,-0.403794f,-0.046434f,0.011644f,-0.085248f,-0.596585f,-0.89614f,-0.403794f,-0.046434f,-1.59164f,0.382134f,-0.043585f,0.011644f,-0.085248f,-0.596585f,-1.59164f,0.382134f,-0.043585f,-0.58564f,0.478089f,-0.038709f,0.011644f,-0.085248f,-0.596585f,-0.58564f,0.478089f,-0.038709f,0.006014f,1.39809f,-0.02954f,0.011644f,-0.085248f,-0.596585f,1.61449f,0.389179f,-0.030228f,0.011644f,-0.085248f,-0.596585f,0.608063f,0.480712f,-0.033735f,0.011644f,-0.085248f,-0.596585f,0.006014f,1.39809f,-0.02954f,0.608063f,0.480712f,-0.033735f};
-    static const GLfloat const_vertices2[] = {0.007409f,-0.312453f,0.557977f,0.426503f,-0.323437f,0.478387f,0.425393f,0.396185f,0.358636f,0.006285f,0.413419f,0.438271f,0.007409f,-0.312453f,0.557977f,0.425393f,0.396185f,0.358636f,-0.404714f,-0.325263f,0.474925f,0.007409f,-0.312453f,0.557977f,0.006285f,0.413419f,0.438271f,-0.405824f,0.394358f,0.355172f,-0.404714f,-0.325263f,0.474925f,0.006285f,0.413419f,0.438271f,1.19977f,-1.39288f,-0.044954f,0.011301f,-0.945519f,-0.04662f,0.011644f,-0.085248f,-0.596585f,0.922539f,-0.399798f,-0.038857f,1.19977f,-1.39288f,-0.044954f,0.011644f,-0.085248f,-0.596585f,1.19977f,-1.39288f,-0.044954f,0.007069f,-0.093441f,0.522074f,0.011301f,-0.945519f,-0.04662f,0.922539f,-0.399798f,-0.038857f,0.007069f,-0.093441f,0.522074f,1.19977f,-1.39288f,-0.044954f,0.922539f,-0.399798f,-0.038857f,0.011644f,-0.085248f,-0.596585f,1.61449f,0.389179f,-0.030228f,0.922539f,-0.399798f,-0.038857f,1.61449f,0.389179f,-0.030228f,0.007069f,-0.093441f,0.522074f,-1.16889f,-1.39809f,-0.054822f,0.007069f,-0.093441f,0.522074f,-0.89614f,-0.403794f,-0.046434f,0.011301f,-0.945519f,-0.04662f,0.007069f,-0.093441f,0.522074f,-1.16889f,-1.39809f,-0.054822f,-0.89614f,-0.403794f,-0.046434f,0.007069f,-0.093441f,0.522074f,-1.59164f,0.382134f,-0.043585f,0.007069f,-0.093441f,0.522074f,0.608063f,0.480712f,-0.033735f,0.006014f,1.39809f,-0.02954f,-0.58564f,0.478089f,-0.038709f,0.007069f,-0.093441f,0.522074f,0.006014f,1.39809f,-0.02954f,1.61449f,0.389179f,-0.030228f,0.608063f,0.480712f,-0.033735f,0.007069f,-0.093441f,0.522074f,-1.59164f,0.382134f,-0.043585f,0.007069f,-0.093441f,0.522074f,-0.58564f,0.478089f,-0.038709f,0.011301f,-0.945519f,-0.04662f,-1.16889f,-1.39809f,-0.054822f,0.011644f,-0.085248f,-0.596585f,-1.16889f,-1.39809f,-0.054822f,-0.89614f,-0.403794f,-0.046434f,0.011644f,-0.085248f,-0.596585f,-0.89614f,-0.403794f,-0.046434f,-1.59164f,0.382134f,-0.043585f,0.011644f,-0.085248f,-0.596585f,-1.59164f,0.382134f,-0.043585f,-0.58564f,0.478089f,-0.038709f,0.011644f,-0.085248f,-0.596585f,-0.58564f,0.478089f,-0.038709f,0.006014f,1.39809f,-0.02954f,0.011644f,-0.085248f,-0.596585f,1.61449f,0.389179f,-0.030228f,0.011644f,-0.085248f,-0.596585f,0.608063f,0.480712f,-0.033735f,0.011644f,-0.085248f,-0.596585f,0.006014f,1.39809f,-0.02954f,0.608063f,0.480712f,-0.033735f};
-    static const GLushort const_indices[] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71};
 
+    static const GLfloat const_vertices[] = {
+            -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, -1.0f,
+            1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f,
+            -1.0f, 1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f,
+            1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, 1.0f,
+            -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
+            1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,
+            1.0f,  1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  1.0f,
+            1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f,
+            1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f};
+
+    static const GLfloat const_normals[] = {
+            0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+            1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+            0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+            1.0f,  0.0f,  0.0f,  0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,
+            -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, -1.0f,
+            0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,
+            -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+            0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+            1.0f,  0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,
+            0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -1.0f, 0.0f};
 // The minimum Tango Core version required from this application.
 constexpr int kTangoCoreMinimumVersion = 9377;
 constexpr float kCubeScale = 0.05f;
@@ -273,19 +310,18 @@ void PlaneFittingApplication::OnSurfaceCreated(AAssetManager* aasset_manager) {
   c_object = new tango_gl::Mesh();
   c_object->SetShader(true);
 
+
   std::vector<GLfloat> vertices(
           const_vertices,
           const_vertices + sizeof(const_vertices) / sizeof(GLfloat));
-  std::vector<GLfloat> vertices2(
-          const_vertices2,
-          const_vertices2 + sizeof(const_vertices2) / sizeof(GLfloat));
-  std::vector<GLushort> indices(
-          const_indices, const_indices + sizeof(const_indices) / sizeof(GLushort));
-  c_object->SetVertices(vertices, vertices2);
+  std::vector<GLfloat> normals(
+          const_normals, const_normals + sizeof(const_normals) / sizeof(GLfloat));
+  c_object->SetVertices(vertices, normals);
+
   //tango_gl::obj_loader::LoadOBJData(aasset_manager, "star.jpg", vertices, indices);
 
   c_object->SetScale(glm::vec3(kCubeScale, kCubeScale, kCubeScale));
-  c_object->SetColor(1.0f, 1.0f, 0.0f); //yellow
+  c_object->SetColor(1.0f, 0.0f, 0.0f); //yellow
 
   is_gl_initialized_ = true;
 }
@@ -497,9 +533,63 @@ void PlaneFittingApplication::OnTouchEvent(float x, float y) {
   rotation_matrix[2] = normal_Z;
   const glm::quat rotation = glm::toQuat(rotation_matrix);
 
-    c_object->SetRotation(rotation);
-    c_object->SetPosition(glm::vec3(area_description_position) +
+  c_object->SetRotation(rotation);
+  c_object->SetPosition(glm::vec3(area_description_position) +
                        plane_normal * kCubeScale);
+
+        size_t MSG_SIZE = 512;
+        int mySocket; // holds ID of the socket
+        struct sockaddr_in serv; // object of server to connect to
+        unsigned int sockaddr_length = sizeof(struct sockaddr_in);
+        void* server_reply;
+        const char* hostIP = "24.240.32.197";
+        int port = 8080;
+        const char* message = "Client TEST"; // sets aside extra space to expand from single char
+        int status;// used to get function return values
+
+        mySocket = socket(AF_INET, SOCK_DGRAM, 0);
+        if (mySocket < 0) { printf ("Could not create socket"); }
+
+        serv.sin_addr.s_addr = inet_addr(hostIP); // sets IP of server
+        serv.sin_family = AF_INET; // uses internet address domain
+        serv.sin_port = htons(port); // sets PORT on server
+
+  // sends UDP packet to server
+        status = sendto((int)mySocket, message, (size_t)MSG_SIZE,(int)0 , (const struct sockaddr *)&serv, sockaddr_length);
+        if (status < 0) { printf("Send failed\n"); }
+
+  // gets reply from server
+        status = recvfrom((int)mySocket, (void*)server_reply, (size_t)MSG_SIZE, (int)0, (struct sockaddr *)&serv, (socklen_t *)&sockaddr_length);
+
+        if (status < 0) {
+          printf("ERROR: Reply failed\n");
+        } else {
+          printf("Reply received: %s\n\n", server_reply);
+        }
+
+        close(mySocket);
+
+      /*    easywsclient::WebSocket::pointer ws = easywsclient::WebSocket::from_url("ws://24.240.32.197:8080");
+          ws->send("goodbye");
+          ws->send("hello");
+          while (ws->getReadyState() != easywsclient::WebSocket::CLOSED) {
+            ws->poll();
+            ws->dispatch([ws](const std::string & message) {
+                printf(">>> %s\n", message.c_str());
+            });
+          }
+          delete ws;*/
+  /*std::unique_ptr<easywsclient::WebSocket> ws(easywsclient::WebSocket::from_url("ws://24.240.32.197:8080"));
+  ws->send("goodbye");
+  ws->send("hello");
+  while (ws->getReadyState() != easywsclient::WebSocket::CLOSED) {
+    easywsclient::WebSocket::pointer wsp = &*ws; // <-- because a unique_ptr cannot be copied into a lambda
+    ws->poll();
+    ws->dispatch([wsp](const std::string & message) {
+        printf(">>> %s\n", message.c_str());
+        if (message == "world") { wsp->close(); }
+    });
+  }*/
 
 }
 

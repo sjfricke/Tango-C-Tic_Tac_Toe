@@ -21,7 +21,8 @@ LOCAL_MODULE := libcpp_plane_fitting_example
 LOCAL_SHARED_LIBRARIES := tango_client_api tango_support_api
 LOCAL_CFLAGS := -std=c++11
 LOCAL_C_INCLUDES := $(PROJECT_ROOT)/tango_gl/include \
-                    $(PROJECT_ROOT)/third_party/glm
+                    $(PROJECT_ROOT)/third_party/glm \
+                    $(PROJECT_ROOT)/easywsclient/include
 LOCAL_SRC_FILES := jni_interface.cc \
                    plane_fitting.cc \
                    plane_fitting_application.cc \
@@ -36,7 +37,9 @@ LOCAL_SRC_FILES := jni_interface.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/transform.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/util.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/video_overlay.cc \
-                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/obj_loader.cc
+                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/obj_loader.cc \
+                   $(PROJECT_ROOT_FROM_JNI)/easywsclient/easywsclient.cpp
+
 LOCAL_LDLIBS := -lGLESv2 -llog -L$(SYSROOT)/usr/lib -landroid
 include $(BUILD_SHARED_LIBRARY)
 
