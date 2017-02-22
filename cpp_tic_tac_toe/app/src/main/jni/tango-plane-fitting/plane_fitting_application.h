@@ -74,6 +74,8 @@ class PlaneFittingApplication {
   // Configure whether to display depth data for debugging.
   void SetRenderDebugPointCloud(bool on);
 
+  void SetColorValue(int color_value);
+
   // Configure the viewport of the GL view.
   void OnSurfaceChanged(int width, int height);
 

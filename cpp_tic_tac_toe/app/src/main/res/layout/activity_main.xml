@@ -46,7 +46,8 @@
                 android:gravity="top"
                 android:orientation="horizontal"
                 android:paddingStart="5dp"
-                android:paddingEnd="12dp">
+                android:paddingEnd="12dp"
+                android:id="@+id/linearLayout">
 
                 <ImageButton
                     android:id="@+id/drawer_button"
@@ -57,6 +58,36 @@
                     android:contentDescription="@string/open_drawer_button"
                     android:src="@drawable/ic_drawer" />
             </LinearLayout>
+
+            <Button
+                android:text="Red"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/linearLayout"
+                android:layout_alignStart="@+id/linearLayout"
+                android:layout_marginTop="14dp"
+                android:id="@+id/red_button"
+                android:onClick="setRed"/>
+
+            <Button
+                android:text="Bue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/green_button"
+                android:layout_alignStart="@+id/green_button"
+                android:layout_marginTop="17dp"
+                android:id="@+id/blue_button"
+                android:onClick="setBlue"/>
+
+            <Button
+                android:text="Green"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:id="@+id/green_button"
+                android:layout_below="@+id/red_button"
+                android:layout_alignStart="@+id/red_button"
+                android:onClick="setGreen"/>
         </RelativeLayout>
     </FrameLayout>
 

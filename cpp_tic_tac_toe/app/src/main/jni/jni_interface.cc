@@ -59,6 +59,12 @@ Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_setRenderDebugPoi
 }
 
 JNIEXPORT void JNICALL
+Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_setColorValue(
+    JNIEnv* /*env*/, jobject /*obj*/, jint color_value) {
+  app.SetColorValue(color_value);
+}
+
+JNIEXPORT void JNICALL
 Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_onGlSurfaceChanged(
     JNIEnv* /*env*/, jobject /*obj*/, jint width, jint height) {
   app.OnSurfaceChanged(width, height);

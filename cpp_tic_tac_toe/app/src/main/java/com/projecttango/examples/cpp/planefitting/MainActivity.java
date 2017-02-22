@@ -92,6 +92,24 @@ public class MainActivity extends Activity {
     }
   }
 
+  public void setBlue(View view) {
+    Log.w("LOG_TAG", "Need to print : 2");
+
+    TangoJNINative.setColorValue(2);
+  }
+
+  public void setGreen(View view) {
+
+    Log.w("LOG_TAG", "Need to print : 1");
+    TangoJNINative.setColorValue(1);
+  }
+
+  public void setRed(View view) {
+
+    Log.w("LOG_TAG", "Need to print : 0");
+    TangoJNINative.setColorValue(0);
+  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);

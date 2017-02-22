@@ -39,6 +39,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include <android/log.h>
+
 namespace tango_plane_fitting {
 
 namespace {
@@ -295,7 +297,7 @@ void PlaneFittingApplication::OnSurfaceCreated(AAssetManager* aasset_manager) {
 
   //tango_gl::obj_loader::LoadOBJData(aasset_manager, "star.jpg", vertices, indices);
 
-  c_object->SetScale(glm::vec3(0.0052f, 0.0052f, 0.0052f));
+  c_object->SetScale(glm::vec3(0.0015f, 0.0015f, 0.0015f));
   c_object->SetColor(0.0f, 0.0f, 1.0f); //yellow
 
   is_gl_initialized_ = true;
@@ -303,6 +305,17 @@ void PlaneFittingApplication::OnSurfaceCreated(AAssetManager* aasset_manager) {
 
 void PlaneFittingApplication::SetRenderDebugPointCloud(bool on) {
   point_cloud_renderer_->SetRenderDebugColors(on);
+}
+
+void PlaneFittingApplication::SetColorValue(int color_value) {
+  __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "\n \"Need to print : %d \n", color_value);
+  if (color_value == 0) {
+    c_object->SetColor(1.0f, 0.0f, 0.0f);
+  } else if (color_value == 1) {
+    c_object->SetColor(0.0f, 1.0f, 0.0f);
+  } else if (color_value == 2) {
+    c_object->SetColor(0.0f, 0.0f, 1.0f);
+  }
 }
 
 void PlaneFittingApplication::OnSurfaceChanged(int width, int height) {

@@ -75,4 +75,7 @@ public class TangoJNINative {
 
   // Respond to a display change.
   public static native void onDisplayChanged(int displayRotation);
+
+  //sets color
+  public static native void setColorValue(int color_value);
 }
