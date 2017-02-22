@@ -30,7 +30,7 @@ wsServer.on('request', function(r){
 
 	// The string message that was sent to us
 	var msgString = message.utf8Data;
-
+	
 	// Loop through all clients
 	for(var i in clients){
 	    // Send a message to the client with the message
