@@ -31,6 +31,17 @@
 #include "tango-plane-fitting/point_cloud_renderer.h"
 //#include "../../../../../../../../../../AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-arm/usr/include/android/asset_manager.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <signal.h>
+
+
 namespace tango_plane_fitting {
 
 /**
@@ -175,6 +186,20 @@ class PlaneFittingApplication {
   // Both of these orientation is used for handling display rotation in portrait
   // or landscape.
   TangoSupportRotation display_rotation_;
+
+  //server stuff
+  size_t MSG_SIZE = 8;
+  int mySocket; // holds ID of the socket
+  struct sockaddr_in serv; // object of server to connect to
+  unsigned int sockaddr_length = sizeof(struct sockaddr_in);
+  void* server_reply = malloc(MSG_SIZE);
+  const char* hostIP = "24.240.32.197";
+  int port = 8080;
+  char* message = "4";
+  int status;// used to get function return values
+  char* RED = "0";
+  char* GREEN = "1";
+  char* BLUE = "2";
 };
 
 }  // namespace tango_plane_fitting

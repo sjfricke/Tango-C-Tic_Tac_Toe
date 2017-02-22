@@ -21,7 +21,7 @@
 #include <pthread.h>
 
 #define DEFAULT_PORT 5000
-#define MSG_SIZE 512
+#define MSG_SIZE 8
 
 pthread_mutex_t server_status_lock = PTHREAD_MUTEX_INITIALIZER;
 int server_status = 0;
@@ -144,9 +144,11 @@ void *connection_handler(void *socket_desc) {
       returnMsg[0] = '2';
     }
     
+
+    printf("Sending back: %s\n", returnMsg);
     
     // sends back response message
-    status = send(socket, returnMsg, 1, 0);
+    status = send(socket, returnMsg, MSG_SIZE, 0);
     if (status < 0) { error("ERROR on send\n"); }
 
   } // end of connection while loop

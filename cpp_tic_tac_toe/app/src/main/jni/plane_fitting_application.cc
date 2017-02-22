@@ -31,14 +31,6 @@
 #include <android/asset_manager.h>
 #include <tango-plane-fitting/plane_fitting_application.h>
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <stdlib.h>
-#include <unistd.h>
-
 #include <android/log.h>
 
 namespace tango_plane_fitting {
@@ -301,6 +293,19 @@ void PlaneFittingApplication::OnSurfaceCreated(AAssetManager* aasset_manager) {
   c_object->SetColor(0.0f, 0.0f, 1.0f); //yellow
 
   is_gl_initialized_ = true;
+
+  mySocket = socket(AF_INET, SOCK_STREAM, 0);
+  if (mySocket < 0) { __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Could not create socket"); }
+
+  serv.sin_addr.s_addr = inet_addr(hostIP); // sets IP of server
+  serv.sin_family = AF_INET; // uses internet address domain
+  serv.sin_port = htons(port); // sets PORT on server
+
+  // Connect to remote server with socket
+  status = connect(mySocket, (struct sockaddr *)&serv , sizeof(serv));
+  if (status < 0) { __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "connection error");}
+
+  __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Connected!!!");
 }
 
 void PlaneFittingApplication::SetRenderDebugPointCloud(bool on) {
@@ -309,13 +314,37 @@ void PlaneFittingApplication::SetRenderDebugPointCloud(bool on) {
 
 void PlaneFittingApplication::SetColorValue(int color_value) {
   __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "\n \"Need to print : %d \n", color_value);
+
   if (color_value == 0) {
-    c_object->SetColor(1.0f, 0.0f, 0.0f);
+    message = "0";
   } else if (color_value == 1) {
-    c_object->SetColor(0.0f, 1.0f, 0.0f);
+    message = "1";
   } else if (color_value == 2) {
+    message = "2";
+  }
+
+  status = send(mySocket, message , MSG_SIZE, 0);
+  if (status < 0) { __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Send failed"); }
+
+  printf("Sent Message\n");
+
+  // receive a reply from the server
+  status = recv(mySocket, server_reply, MSG_SIZE, 0);
+  if (status < 0) {
+    __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "ERROR %d: Reply failed %s",status, (char*)server_reply);
+  } else {
+    __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Reply received: %s", (char*)server_reply);
+  }
+
+  if ( static_cast<char*>(server_reply)[0] == RED[0] ) {
+    c_object->SetColor(1.0f, 0.0f, 0.0f);
+  } else  if ( static_cast<char*>(server_reply)[0] == GREEN[0] ) {
+    c_object->SetColor(0.0f, 1.0f, 0.0f);
+  } else if ( static_cast<char*>(server_reply)[0] == BLUE[0] ) {
     c_object->SetColor(0.0f, 0.0f, 1.0f);
   }
+
+
 }
 
 void PlaneFittingApplication::OnSurfaceChanged(int width, int height) {
@@ -530,37 +559,6 @@ void PlaneFittingApplication::OnTouchEvent(float x, float y) {
   c_object->SetPosition(glm::vec3(area_description_position) +
                        plane_normal * kCubeScale);
 
-//        size_t MSG_SIZE = 512;
-//        int mySocket; // holds ID of the socket
-//        struct sockaddr_in serv; // object of server to connect to
-//        unsigned int sockaddr_length = sizeof(struct sockaddr_in);
-//        void* server_reply;
-//        const char* hostIP = "24.240.32.197";
-//        int port = 8080;
-//        const char* message = "Client TEST"; // sets aside extra space to expand from single char
-//        int status;// used to get function return values
-//
-//        mySocket = socket(AF_INET, SOCK_DGRAM, 0);
-//        if (mySocket < 0) { printf ("Could not create socket"); }
-//
-//        serv.sin_addr.s_addr = inet_addr(hostIP); // sets IP of server
-//        serv.sin_family = AF_INET; // uses internet address domain
-//        serv.sin_port = htons(port); // sets PORT on server
-//
-//  // sends UDP packet to server
-//        status = sendto((int)mySocket, message, (size_t)MSG_SIZE,(int)0 , (const struct sockaddr *)&serv, sockaddr_length);
-//        if (status < 0) { printf("Send failed\n"); }
-//
-//  // gets reply from server
-//        status = recvfrom((int)mySocket, (void*)server_reply, (size_t)MSG_SIZE, (int)0, (struct sockaddr *)&serv, (socklen_t *)&sockaddr_length);
-//
-//        if (status < 0) {
-//          printf("ERROR: Reply failed\n");
-//        } else {
-//          printf("Reply received: %s\n\n", server_reply);
-//        }
-//
-//        close(mySocket);
 }
 
 
