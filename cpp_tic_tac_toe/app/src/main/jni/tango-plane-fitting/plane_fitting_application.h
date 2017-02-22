@@ -29,7 +29,7 @@
 #include <android/asset_manager.h>
 
 #include "tango-plane-fitting/point_cloud_renderer.h"
-#include "../../../../../../../../../../AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-arm/usr/include/android/asset_manager.h"
+//#include "../../../../../../../../../../AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-arm/usr/include/android/asset_manager.h"
 
 namespace tango_plane_fitting {
 
