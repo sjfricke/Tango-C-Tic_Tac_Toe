@@ -195,11 +195,11 @@ class PlaneFittingApplication {
   void* server_reply = malloc(MSG_SIZE);
   const char* hostIP = "24.240.32.197";
   int port = 8080;
-  char* message = "4";
+  //char* message = "4";
   int status;// used to get function return values
-  char* RED = "0";
-  char* GREEN = "1";
-  char* BLUE = "2";
+  //char* RED = "0";
+  //char* GREEN = "1";
+  //char* BLUE = "2";
 };
 
 }  // namespace tango_plane_fitting
