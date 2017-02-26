@@ -25,6 +25,7 @@
 #include <tango-gl/util.h>
 #include <tango-gl/video_overlay.h>
 #include <tango-gl/obj_loader.h>
+#include <tango-gl/material.h>
 
 #include <android/asset_manager.h>
 
@@ -162,6 +163,8 @@ class PlaneFittingApplication {
   tango_gl::VideoOverlay* video_overlay_;
   PointCloudRenderer* point_cloud_renderer_;
   tango_gl::Mesh* c_object;
+  tango_gl::Material* mido_material_;
+  tango_gl::Texture* mido_texture_;
     //tango_gl::Cube* cube_[10];
   //int cube_count;
   // The dimensions of the render window.

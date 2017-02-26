@@ -30,7 +30,6 @@ LOCAL_SRC_FILES := jni_interface.cc \
                    plane_fitting.cc \
                    plane_fitting_application.cc \
                    point_cloud_renderer.cc \
-                   scene.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/bounding_box.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/camera.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/conversions.cc \
@@ -46,10 +45,11 @@ LOCAL_SRC_FILES := jni_interface.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/transform.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/util.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/video_overlay.cc \
-                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/obj_loader.cc
+                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/obj_loader.cc \
+                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/material.cc
 
 
-LOCAL_LDLIBS := -lGLESv2 -llog -L$(SYSROOT)/usr/lib -lz -landroid
+LOCAL_LDLIBS := -lGLESv3 -llog -L$(SYSROOT)/usr/lib -lz -landroid
 include $(BUILD_SHARED_LIBRARY)
 
 $(call import-add-path,$(PROJECT_ROOT))

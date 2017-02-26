@@ -63,6 +63,9 @@ bool LoadOBJData(AAssetManager* mgr, const char* path, std::vector<GLfloat>& ver
 
 bool LoadOBJData(AAssetManager* mgr, const char* path, std::vector<GLfloat>& vertices,
                  std::vector<GLfloat>& normals);
+
+bool LoadOBJData(AAssetManager* mgr, const char* path, std::vector<GLfloat>& vertices,
+                         std::vector<GLfloat>& normals, std::vector<GLfloat>& textures);
 }  // namespace obj_loader
 }  // namespace tango_gl
 #endif  // TANGO_GL_OBJ_LOADER_H_
