@@ -23,7 +23,8 @@
 #include <stdlib.h>
 #include <jni.h>
 #include <android/log.h>
-#include <GLES2/gl2.h>
+#include <GLES3/gl3.h>
+#define __gl2_h_                 // what the f*** http://stackoverflow.com/questions/31003863/gles-3-0-including-gl2ext-h
 #include <GLES2/gl2ext.h>
 
 #include <tango_support_api.h>

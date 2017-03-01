@@ -81,4 +81,6 @@ public class TangoJNINative {
    * Configuration changed callback, called when screen rotates.
    */
   public static native void onConfigurationChanged(int displayOrientation);
+
+  public static native void onSetScale(int scaleSize);
 }

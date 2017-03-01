@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Display;
 import android.view.WindowManager;
+import android.widget.SeekBar;
 
 import com.projecttango.examples.cpp.util.TangoInitializationHelper;
 
@@ -39,6 +40,8 @@ public class AugmentedRealityActivity extends Activity {
   // through OpenGL ES 2.0 in the native code.
   private AugmentedRealityRenderer mRenderer;
   private GLSurfaceView mGLView;
+
+  SeekBar seekBar1;
 
   // Screen size for normalizing the touch input for orbiting the render camera.
   private Point mScreenSize = new Point();
@@ -74,6 +77,23 @@ public class AugmentedRealityActivity extends Activity {
     // Setting content view of this activity and getting the mIsAutoRecovery
     // flag from StartActivity.
     setContentView(R.layout.activity_augmented_reality);
+
+    seekBar1=(SeekBar)findViewById(R.id.simpleSeekBar);
+    seekBar1.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+      int progressChangedValue = 0;
+
+      public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        progressChangedValue = progress;
+      }
+
+      public void onStartTrackingTouch(SeekBar seekBar) {
+        // TODO Auto-generated method stub
+      }
+
+      public void onStopTrackingTouch(SeekBar seekBar) {
+        TangoJNINative.onSetScale(progressChangedValue);
+      }
+    });
 
     // OpenGL view where all of the graphics are drawn
     mGLView = (GLSurfaceView) findViewById(R.id.gl_surface_view);
@@ -113,6 +133,7 @@ public class AugmentedRealityActivity extends Activity {
     super.onDestroy();
     TangoJNINative.onDestroy();
   }
+
 
   @Override
   public void onConfigurationChanged(Configuration newConfig) {

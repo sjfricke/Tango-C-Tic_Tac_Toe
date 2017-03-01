@@ -83,6 +83,12 @@ Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_onConfigurati
   app.OnDeviceRotationChanged(display_orientation);
 }
 
+JNIEXPORT void JNICALL
+Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_onSetScale(
+    JNIEnv*, jobject, int scaleSize) {
+  app.OnSetScale(scaleSize);
+}
+
 #ifdef __cplusplus
 }
 #endif

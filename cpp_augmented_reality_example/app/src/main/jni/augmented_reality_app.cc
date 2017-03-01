@@ -57,6 +57,10 @@ void onTextureAvailableRouter(void* context, TangoCameraId id) {
 
 namespace tango_augmented_reality {
 
+void AugmentedRealityApp::OnSetScale(int scaleSize) {
+  LOGE("SCALE: %d", scaleSize);
+}
+
 void AugmentedRealityApp::onTangoEventAvailable(const TangoEvent* event) {
   std::lock_guard<std::mutex> lock(tango_event_mutex_);
   tango_event_data_.UpdateTangoEvent(event);
@@ -459,4 +463,6 @@ void AugmentedRealityApp::FormatTransformString() {
   transform_string_ = string_stream.str();
   string_stream.flush();
 }
+
+
 }  // namespace tango_augmented_reality

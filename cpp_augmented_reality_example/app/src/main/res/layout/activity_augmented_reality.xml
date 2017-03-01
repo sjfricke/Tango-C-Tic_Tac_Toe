@@ -23,4 +23,13 @@
         android:layout_height="fill_parent"
         android:layout_gravity="top" />
 
+    <SeekBar
+        android:id="@+id/simpleSeekBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:max="10"
+        android:progress="1"
+        />
+
 </RelativeLayout>
