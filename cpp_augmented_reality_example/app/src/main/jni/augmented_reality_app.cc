@@ -58,7 +58,8 @@ void onTextureAvailableRouter(void* context, TangoCameraId id) {
 namespace tango_augmented_reality {
 
 void AugmentedRealityApp::OnSetScale(int scaleSize) {
-  LOGE("SCALE: %d", scaleSize);
+  //LOGE("SCALE: %d", scaleSize);
+  scaleSet = scaleSize;
 }
 
 void AugmentedRealityApp::onTangoEventAvailable(const TangoEvent* event) {
@@ -380,7 +381,7 @@ void AugmentedRealityApp::OnDrawFrame() {
         UpdateTransform(matrix_transform.matrix, video_overlay_timestamp);
       }
 
-      main_scene_.RotateEarthForTimestamp(video_overlay_timestamp);
+      main_scene_.RotateEarthForTimestamp(video_overlay_timestamp, scaleSet);
       main_scene_.RotateMoonForTimestamp(video_overlay_timestamp);
       main_scene_.TranslateMoonForTimestamp(video_overlay_timestamp);
 

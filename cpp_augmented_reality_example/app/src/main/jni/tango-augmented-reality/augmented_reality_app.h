@@ -105,6 +105,7 @@ private:
   // Request the render function from Java layer.
   void RequestRender();
 
+  int scaleSet = 1;
   // Update current transform and previous transform.
   //
   // @param transform: transform data of current frame.

@@ -138,14 +138,14 @@ void Scene::Render(const glm::mat4& cur_pose_transformation) {
   tango_gl::Render(*moon_mesh_, *moon_material_, moon_transform_, *camera_);
 }
 
-void Scene::RotateEarthForTimestamp(double timestamp) {
+void Scene::RotateEarthForTimestamp(double timestamp, int scale) {
   RotateYAxisForTimestamp(timestamp, &earth_transform_, &earth_last_angle_,
-                          &earth_last_timestamp_);
+                          &earth_last_timestamp_, scale);
 }
 
 void Scene::RotateMoonForTimestamp(double timestamp) {
   RotateYAxisForTimestamp(timestamp, &moon_transform_, &moon_last_angle_,
-                          &moon_last_timestamp_);
+                          &moon_last_timestamp_, 1);
 }
 
 void Scene::TranslateMoonForTimestamp(double timestamp) {
@@ -170,7 +170,7 @@ void Scene::TranslateMoonForTimestamp(double timestamp) {
 void Scene::RotateYAxisForTimestamp(double timestamp,
                                     tango_gl::Transform* transform,
                                     double* last_angle,
-                                    double* last_timestamp) {
+                                    double* last_timestamp, int scale) {
   if (*last_timestamp > 0) {
     // Calculate time difference in seconds
     double delta_time = timestamp - *last_timestamp;
@@ -184,7 +184,7 @@ void Scene::RotateYAxisForTimestamp(double timestamp,
     double w = cos(angle / 2);
     double y = sin(angle / 2);
 
-    transform->SetRotation(glm::quat(w, 0.0f, y, 0.0f));
+    transform->SetRotation(glm::quat(w, ((float)scale / 10.0), y, 0.0f));
   }
   *last_timestamp = timestamp;
 }

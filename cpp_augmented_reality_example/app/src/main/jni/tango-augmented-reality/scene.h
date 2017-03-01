@@ -89,7 +89,7 @@ class Scene {
 
   // Change the earth transformation to make it rotate over its Y axis over
   // time
-  void RotateEarthForTimestamp(double timestamp);
+  void RotateEarthForTimestamp(double timestamp, int scale);
 
   // Change the moon transformation to make it rotate over its Y axis over
   // time
@@ -100,7 +100,7 @@ class Scene {
 
   // Apply a Y axis rotate transform to object
   void RotateYAxisForTimestamp(double timestamp, tango_gl::Transform* transform,
-                               double* last_angle, double* last_timestamp);
+                               double* last_angle, double* last_timestamp, int scale);
 
   // Set video overlay's orientation based on current device orientation.
   void SetVideoOverlayRotation(int display_rotation);
