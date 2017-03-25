@@ -292,7 +292,7 @@ void PlaneFittingApplication::SetRenderDebugPointCloud(bool on) {
 }
 
 void PlaneFittingApplication::SetColorValue(int color_value) {
-  __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "\n \"Need to print : %d \n", color_value);
+  __android_log_print(ANDROID_LOG_DEBUG, "ABC", "\n \"SetColorValue : %d \n", color_value);
 
   if (color_value == 0) {
     cube_->SetColor(1.0f, 0.0f, 0.0f);
@@ -334,13 +334,21 @@ void PlaneFittingApplication::SetColorValue(int color_value) {
 }
 
 void PlaneFittingApplication::on_new_color(char* body) {
-  if (strncasecmp(body, "red", 3)) {
+  if (strncasecmp(body, "red", 3) == 0) {
     SetColorValue(0);
-  } else if (strncasecmp(body, "green", 5)) {
+    __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"on_new_color (%d) : %s \n", 0, body);
+  } else if (strncasecmp(body, "green", 5)  == 0) {
     SetColorValue(1);
-  } else if (strncasecmp(body, "blue", 4)) {
+    __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"on_new_color (%d) : %s \n", 1, body);
+
+  } else if (strncasecmp(body, "blue", 4)  == 0) {
     SetColorValue(2);
-  }
+    __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"on_new_color (%d) : %s \n", 2, body);
+
+  } else {
+    __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"on_new_color (%d) : %s \n", -1, body);
+
+  };
 
 }
 
@@ -597,5 +605,6 @@ glm::mat4 PlaneFittingApplication::GetAreaDescriptionTDepthTransform(
 }  // namespace tango_plane_fitting
 
 void new_color_callback(char *body) {
+  __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"new_color_callback : %s \n", body);
   app.on_new_color(body);
 }
