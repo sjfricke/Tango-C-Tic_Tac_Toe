@@ -32,17 +32,6 @@
 #include "tango-plane-fitting/point_cloud_renderer.h"
 //#include "../../../../../../../../../../AppData/Local/Android/sdk/ndk-bundle/platforms/android-19/arch-arm/usr/include/android/asset_manager.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <signal.h>
-
-
 namespace tango_plane_fitting {
 
 /**
