@@ -21,7 +21,7 @@
 
 #include "tango-plane-fitting/plane_fitting_application.h"
 
-static tango_plane_fitting::PlaneFittingApplication app;
+tango_plane_fitting::PlaneFittingApplication app;
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,6 +62,8 @@ JNIEXPORT void JNICALL
 Java_com_projecttango_examples_cpp_planefitting_TangoJNINative_setColorValue(
     JNIEnv* /*env*/, jobject /*obj*/, jint color_value) {
   app.SetColorValue(color_value);
+  //need to broadcast when clicked
+  app.BroadCastColorValue(color_value);
 }
 
 JNIEXPORT void JNICALL
