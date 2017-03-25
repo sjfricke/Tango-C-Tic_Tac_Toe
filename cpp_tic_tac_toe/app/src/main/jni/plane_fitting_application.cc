@@ -274,41 +274,11 @@ void PlaneFittingApplication::OnSurfaceCreated(AAssetManager* aasset_manager) {
   video_overlay_->SetDisplayRotation(display_rotation_);
   point_cloud_renderer_ = new PointCloudRenderer();
 
-  c_object = new tango_gl::Mesh();
-  mido_material_ = new tango_gl::Material();
- // mido_texture_ = new tango_gl::Texture(aasset_manager, "earth.png");
-
-  mido_material_->SetShader(
-         tango_gl::shaders::GetTexturedVertexShader().c_str(),
-         tango_gl::shaders::GetTexturedFragmentShader().c_str());
-
-  //mido_material_->SetParam("texture", mido_texture_);
-  // c_object->SetShader(true);
-
-  std::vector<GLfloat> vertices;
-  std::vector<GLfloat> normals;
-  std::vector<GLfloat> textures;
-
-  tango_gl::obj_loader::LoadOBJData(aasset_manager, "ball.mp2", vertices, normals, textures);
-  c_object->SetVertices(vertices, normals, textures);
-
-  c_object->SetScale(glm::vec3(0.007f, 0.007f, 0.007f));
-  c_object->SetColor(0.0f, 0.0f, 1.0f);
+  cube_ = new tango_gl::Cube();
+  cube_->SetScale(glm::vec3(kCubeScale, kCubeScale, kCubeScale));
+  cube_->SetColor(0.7f, 0.7f, 0.7f);
 
   is_gl_initialized_ = true;
-
-//  mySocket = socket(AF_INET, SOCK_STREAM, 0);
-//  if (mySocket < 0) { __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Could not create socket"); }
-//
-//  serv.sin_addr.s_addr = inet_addr(hostIP); // sets IP of server
-//  serv.sin_family = AF_INET; // uses internet address domain
-//  serv.sin_port = htons(port); // sets PORT on server
-//
-//  // Connect to remote server with socket
-//  status = connect(mySocket, (struct sockaddr *)&serv , sizeof(serv));
-//  if (status < 0) { __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "connection error");}
-//
-//  __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Connected!!!");
 }
 
 void PlaneFittingApplication::SetRenderDebugPointCloud(bool on) {
@@ -316,8 +286,15 @@ void PlaneFittingApplication::SetRenderDebugPointCloud(bool on) {
 }
 
 void PlaneFittingApplication::SetColorValue(int color_value) {
-//  __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "\n \"Need to print : %d \n", color_value);
-//
+  __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "\n \"Need to print : %d \n", color_value);
+
+  if (color_value == 0) {
+    cube_->SetColor(1.0f, 0.0f, 0.0f);
+  } else if (color_value == 1) {
+    cube_->SetColor(0.0f, 1.0f, 0.0f);
+  } else if (color_value == 2) {
+    cube_->SetColor(0.0f, 0.0f, 1.0f);
+  }
 //  if (color_value == 0) {
 //    message = "0";
 //  } else if (color_value == 1) {
@@ -325,7 +302,7 @@ void PlaneFittingApplication::SetColorValue(int color_value) {
 //  } else if (color_value == 2) {
 //    message = "2";
 //  }
-//
+
 //  status = send(mySocket, message , MSG_SIZE, 0);
 //  if (status < 0) { __android_log_print(ANDROID_LOG_DEBUG, "LOG_TAG", "Send failed"); }
 //
@@ -340,11 +317,11 @@ void PlaneFittingApplication::SetColorValue(int color_value) {
 //  }
 //
 //  if ( static_cast<char*>(server_reply)[0] == RED[0] ) {
-//    c_object->SetColor(1.0f, 0.0f, 0.0f);
+//    cube_->SetColor(1.0f, 0.0f, 0.0f);
 //  } else  if ( static_cast<char*>(server_reply)[0] == GREEN[0] ) {
-//    c_object->SetColor(0.0f, 1.0f, 0.0f);
+//    cube_->SetColor(0.0f, 1.0f, 0.0f);
 //  } else if ( static_cast<char*>(server_reply)[0] == BLUE[0] ) {
-//    c_object->SetColor(0.0f, 0.0f, 1.0f);
+//    cube_->SetColor(0.0f, 0.0f, 1.0f);
 //  }
 
 
@@ -433,18 +410,14 @@ void PlaneFittingApplication::GLRender(
 
   glDisable(GL_BLEND);
 
-  //tango_gl::Render(c_object, mido_material_, projection_matrix_ar_, color_camera_T_area_description);
-  c_object->Render(projection_matrix_ar_, color_camera_T_area_description,
-                   (const tango_gl::Material &) mido_material_);
-
+  cube_->Render(projection_matrix_ar_, color_camera_T_area_description);
 }
 
 void PlaneFittingApplication::DeleteResources() {
   delete video_overlay_;
-  delete c_object;
+  delete cube_;
   delete point_cloud_renderer_;
   video_overlay_ = nullptr;
-  c_object = nullptr;
   point_cloud_renderer_ = nullptr;
 }
 
@@ -494,9 +467,9 @@ void PlaneFittingApplication::OnTouchEvent(float x, float y) {
   // the two systems.
   TangoPoseData pose_depth_camera_t0_T_color_camera_t1;
   int ret = TangoSupport_calculateRelativePose(
-      point_cloud->timestamp, TANGO_COORDINATE_FRAME_CAMERA_DEPTH,
-      last_gpu_timestamp_, TANGO_COORDINATE_FRAME_CAMERA_COLOR,
-      &pose_depth_camera_t0_T_color_camera_t1);
+          point_cloud->timestamp, TANGO_COORDINATE_FRAME_CAMERA_DEPTH,
+          last_gpu_timestamp_, TANGO_COORDINATE_FRAME_CAMERA_COLOR,
+          &pose_depth_camera_t0_T_color_camera_t1);
   if (ret != TANGO_SUCCESS) {
     LOGE("%s: could not calculate relative pose", __func__);
     return;
@@ -518,16 +491,16 @@ void PlaneFittingApplication::OnTouchEvent(float x, float y) {
   }
 
   const glm::vec3 depth_position =
-      static_cast<glm::vec3>(double_depth_position);
+          static_cast<glm::vec3>(double_depth_position);
   const glm::vec4 depth_plane_equation =
-      static_cast<glm::vec4>(double_depth_plane_equation);
+          static_cast<glm::vec4>(double_depth_plane_equation);
 
   const glm::mat4 area_description_opengl_T_depth_tango =
-      GetAreaDescriptionTDepthTransform(point_cloud->timestamp);
+          GetAreaDescriptionTDepthTransform(point_cloud->timestamp);
 
   // Transform to Area Description coordinates
   const glm::vec4 area_description_position =
-      area_description_opengl_T_depth_tango * glm::vec4(depth_position, 1.0f);
+          area_description_opengl_T_depth_tango * glm::vec4(depth_position, 1.0f);
 
   glm::vec4 area_description_plane_equation;
   PlaneTransform(depth_plane_equation, area_description_opengl_T_depth_tango,
@@ -550,20 +523,14 @@ void PlaneFittingApplication::OnTouchEvent(float x, float y) {
   normal_Y = glm::normalize(glm::cross(normal_Z, plane_normal));
 
   glm::mat3 rotation_matrix;
-//  rotation_matrix[0] = normal_Y;
-//  rotation_matrix[1] = plane_normal;
-//  rotation_matrix[2] = normal_Z;
-
   rotation_matrix[0] = plane_normal;
   rotation_matrix[1] = normal_Y;
   rotation_matrix[2] = normal_Z;
   const glm::quat rotation = glm::toQuat(rotation_matrix);
-  //const glm::quat rotation_flip = glm::rotate(rotation, (glm::mediump_float)90, glm::vec3(0,0,0));
 
-  //c_object->SetRotation(rotation);
-  c_object->SetPosition(glm::vec3(area_description_position) +
-                       plane_normal * kCubeScale);
-
+  cube_->SetRotation(rotation);
+  cube_->SetPosition(glm::vec3(area_description_position) +
+                     plane_normal * kCubeScale);
 }
 
 
