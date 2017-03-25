@@ -189,20 +189,6 @@ class PlaneFittingApplication {
   // Both of these orientation is used for handling display rotation in portrait
   // or landscape.
   TangoSupportRotation display_rotation_;
-
-  //server stuff
-  size_t MSG_SIZE = 8;
-  int mySocket; // holds ID of the socket
-  struct sockaddr_in serv; // object of server to connect to
-  unsigned int sockaddr_length = sizeof(struct sockaddr_in);
-  void* server_reply = malloc(MSG_SIZE);
-  const char* hostIP = "24.240.32.197";
-  int port = 8080;
-  //char* message = "4";
-  int status;// used to get function return values
-  //char* RED = "0";
-  //char* GREEN = "1";
-  //char* BLUE = "2";
 };
 
 }  // namespace tango_plane_fitting
