@@ -30,6 +30,7 @@ LOCAL_SRC_FILES := jni_interface.cc \
                    plane_fitting.cc \
                    plane_fitting_application.cc \
                    point_cloud_renderer.cc \
+                   WebSocket.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/bounding_box.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/camera.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/conversions.cc \
