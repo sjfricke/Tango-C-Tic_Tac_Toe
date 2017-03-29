@@ -498,6 +498,7 @@ void PlaneFittingApplication::OnTouchEvent(float x, float y) {
     return;
   }
 
+  __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"point cloud: %d \n", (int)point_cloud->num_points );
   // Calculate the conversion from the latest color camera position to the
   // most recent depth camera position. This corrects for screen lag between
   // the two systems.

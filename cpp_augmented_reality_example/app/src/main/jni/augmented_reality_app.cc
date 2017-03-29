@@ -206,6 +206,42 @@ void AugmentedRealityApp::TangoSetupConfig() {
     std::exit(EXIT_SUCCESS);
   }
 
+  ret =
+      TangoConfig_setBool(tango_config_, "config_enable_depth", true);
+  if (ret != TANGO_SUCCESS) {
+    LOGE("PlaneFittingApplication::TangoSetupConfig, Failed to enable depth.");
+    std::exit(EXIT_SUCCESS);
+  }
+
+  ret = TangoConfig_setInt32(tango_config_, "config_depth_mode",
+                             TANGO_POINTCLOUD_XYZC);
+  if (ret != TANGO_SUCCESS) {
+    LOGE("PlaneFittingApplication::TangoSetupConfig, Failed to configure to "
+             "XYZC.");
+    std::exit(EXIT_SUCCESS);
+  }
+
+  if (point_cloud_manager_ == nullptr) {
+    int32_t max_point_cloud_elements;
+    ret = TangoConfig_getInt32(tango_config_, "max_point_cloud_elements",
+                               &max_point_cloud_elements);
+    if (ret != TANGO_SUCCESS) {
+      LOGE(
+          "PlaneFittingApplication::TangoSetupConfig, Failed to query maximum "
+              "number of point cloud elements.");
+      std::exit(EXIT_SUCCESS);
+    }
+
+    ret = TangoSupport_createPointCloudManager(max_point_cloud_elements,
+                                               &point_cloud_manager_);
+    if (ret != TANGO_SUCCESS) {
+      LOGE(
+          "PlaneFittingApplication::TangoSetupConfig, Failed to create a "
+              "point cloud manager.");
+      std::exit(EXIT_SUCCESS);
+    }
+  }
+
   // Get TangoCore version string from service.
   char tango_core_version[kVersionStringLength];
   ret = TangoConfig_getString(tango_config_, "tango_service_library_version",
@@ -291,6 +327,8 @@ void AugmentedRealityApp::TangoDisconnect() {
   TangoConfig_free(tango_config_);
   tango_config_ = nullptr;
   TangoService_disconnect();
+  TangoSupport_freePointCloudManager(point_cloud_manager_);
+  point_cloud_manager_ = nullptr;
 }
 
 void AugmentedRealityApp::OnSurfaceCreated(AAssetManager* aasset_manager) {
@@ -502,7 +540,9 @@ void AugmentedRealityApp::FormatTransformString() {
 }
 
 void AugmentedRealityApp::magic() {
-
+  TangoPointCloud* point_cloud = nullptr;
+  TangoSupport_getLatestPointCloud(point_cloud_manager_, &point_cloud);
+  __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"point cloud: %d \n", (int)point_cloud->num_points );
 }
 
 void AugmentedRealityApp::on_new_color(char* body) {
