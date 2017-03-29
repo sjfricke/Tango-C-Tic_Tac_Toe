@@ -110,6 +110,13 @@ class AugmentedRealityApp {
 
   void on_new_color(char* body);
 
+  //
+  // Callback for point clouds that come in from the Tango service.
+  //
+  // @param point_cloud The point cloud returned by the service.
+  //
+  void OnPointCloudAvailable(const TangoPointCloud* point_cloud);
+
 private:
   // Request the render function from Java layer.
   void RequestRender();
@@ -214,6 +221,10 @@ private:
   int display_rotation_;
 
   WebSocket client_socket;
+
+  // Point data manager.
+  TangoSupportPointCloudManager* point_cloud_manager_;
+
 };
 }  // namespace tango_augmented_reality
 

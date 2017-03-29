@@ -21,6 +21,7 @@
 
 #include "tango-augmented-reality/augmented_reality_app.h"
 
+// This blank namespace used for all the callbacks
 namespace {
 const int kVersionStringLength = 128;
 // The minimum Tango Core version required from this application.
@@ -35,7 +36,7 @@ const float kArCameraFarClippingPlane = 100.0f;
 //
 // @param context, context will be a pointer to a AugmentedRealityApp
 //        instance on which to call callbacks.
-// @param event, TangoEvent to route to onTangoEventAvailable function.
+// @param   event, TangoEvent to route to onTangoEventAvailable function.
 void onTangoEventAvailableRouter(void* context, const TangoEvent* event) {
   tango_augmented_reality::AugmentedRealityApp* app =
       static_cast<tango_augmented_reality::AugmentedRealityApp*>(context);
@@ -53,6 +54,22 @@ void onTextureAvailableRouter(void* context, TangoCameraId id) {
       static_cast<tango_augmented_reality::AugmentedRealityApp*>(context);
   app->onTextureAvailable(id);
 }
+
+/**
+* This function will route callbacks to our application object via the context
+* parameter.
+*
+* @param context Will be a pointer to a PlaneFittingApplication instance on
+* which to call callbacks.
+* @param point_cloud The point cloud to pass on.
+*/
+void OnPointCloudAvailableRouter(void* context,
+                                 const TangoPointCloud* point_cloud) {
+    tango_augmented_reality::AugmentedRealityApp* app =
+        static_cast<tango_augmented_reality::AugmentedRealityApp*>(context);
+  app->OnPointCloudAvailable(point_cloud);
+}
+
 }  // namespace
 
 namespace tango_augmented_reality {
@@ -71,6 +88,11 @@ void AugmentedRealityApp::onTextureAvailable(TangoCameraId id) {
   if (id == TANGO_CAMERA_COLOR) {
     RequestRender();
   }
+}
+
+void AugmentedRealityApp::OnPointCloudAvailable(
+    const TangoPointCloud* point_cloud) {
+  TangoSupport_updatePointCloud(point_cloud_manager_, point_cloud);
 }
 
 void AugmentedRealityApp::OnCreate(JNIEnv* env, jobject activity,
@@ -220,6 +242,14 @@ void AugmentedRealityApp::TangoConnectCallbacks() {
         ret);
     std::exit(EXIT_SUCCESS);
   }
+
+  // Register for depth notification.
+  ret = TangoService_connectOnPointCloudAvailable(OnPointCloudAvailableRouter);
+  if (ret != TANGO_SUCCESS) {
+    LOGE("Failed to connected to depth callback.");
+    std::exit(EXIT_SUCCESS);
+  }
+
 }
 
 // Connect to Tango Service, service will start running, and
