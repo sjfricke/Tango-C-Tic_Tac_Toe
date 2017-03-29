@@ -236,6 +236,12 @@ void AugmentedRealityApp::TangoConnect() {
 
   // Initialize TangoSupport context.
   TangoSupport_initializeLibrary();
+
+  // Sets up websocket
+
+  websocket_connected = client_socket.connectSocket("24.240.32.197", 6419);
+  __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"connected: %d \n", websocket_connected);
+  client_socket.setEvent(1, new_color_callback);
 }
 
 void AugmentedRealityApp::OnPause() {
@@ -465,5 +471,19 @@ void AugmentedRealityApp::FormatTransformString() {
   string_stream.flush();
 }
 
+void AugmentedRealityApp::magic() {
+
+}
+
+void AugmentedRealityApp::on_new_color(char* body) {
+    __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"on_new_color (%d) : %s \n", -1, body);
+  scaleSet = 5;
+}
+
 
 }  // namespace tango_augmented_reality
+
+void new_color_callback(char *body) {
+  __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"new_color_callback : %s \n", body);
+  app.on_new_color(body);
+}

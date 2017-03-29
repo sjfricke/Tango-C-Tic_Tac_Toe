@@ -27,6 +27,8 @@ LOCAL_SRC_FILES := augmented_reality_app.cc \
                    jni_interface.cc \
                    scene.cc \
                    tango_event_data.cc \
+                   plane_fitting.cc \
+                   WebSocket.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/bounding_box.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/camera.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/conversions.cc \

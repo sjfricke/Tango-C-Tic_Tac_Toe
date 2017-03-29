@@ -32,4 +32,14 @@
         android:progress="1"
         />
 
+    <Button
+        android:text="Magic?"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/magicButton"
+        android:onClick="setMagic"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="30dp"/>
+
 </RelativeLayout>

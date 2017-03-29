@@ -26,10 +26,9 @@ import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Display;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.SeekBar;
-
-import com.projecttango.examples.cpp.util.TangoInitializationHelper;
 
 /**
  * The main activity of the application which shows debug information and a
@@ -134,6 +133,9 @@ public class AugmentedRealityActivity extends Activity {
     TangoJNINative.onDestroy();
   }
 
+  public void setMagic(View view) {
+    TangoJNINative.setMagic();
+  }
 
   @Override
   public void onConfigurationChanged(Configuration newConfig) {

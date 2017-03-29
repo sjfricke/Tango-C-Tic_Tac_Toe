@@ -21,8 +21,6 @@ import android.content.res.AssetManager;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.projecttango.examples.cpp.util.TangoInitializationHelper;
-
 /**
  * Interfaces between native C++ code and Java code.
  */
@@ -83,4 +81,7 @@ public class TangoJNINative {
   public static native void onConfigurationChanged(int displayOrientation);
 
   public static native void onSetScale(int scaleSize);
+
+  //What it do? Who knows
+  public static native void setMagic();
 }

@@ -45,9 +45,7 @@ LOCAL_SRC_FILES := jni_interface.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/texture.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/transform.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/util.cc \
-                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/video_overlay.cc \
-                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/obj_loader.cc \
-                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/material.cc
+                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/video_overlay.cc
 
 
 LOCAL_LDLIBS := -lGLESv3 -llog -L$(SYSROOT)/usr/lib -lz -landroid

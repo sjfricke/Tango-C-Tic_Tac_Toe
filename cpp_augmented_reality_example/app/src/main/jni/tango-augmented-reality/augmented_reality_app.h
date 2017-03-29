@@ -25,8 +25,12 @@
 #include <tango_client_api.h>  // NOLINT
 #include <tango-gl/util.h>
 
+#include "tango-augmented-reality/WebSocket.h"
+
 #include <tango-augmented-reality/scene.h>
 #include <tango-augmented-reality/tango_event_data.h>
+
+#include "tango-augmented-reality/plane_fitting.h"
 
 namespace tango_augmented_reality {
 
@@ -101,9 +105,16 @@ class AugmentedRealityApp {
 
   void OnSetScale(int scaleSize);
 
+  // Do something cool
+  void magic();
+
+  void on_new_color(char* body);
+
 private:
   // Request the render function from Java layer.
   void RequestRender();
+
+  int websocket_connected = 1;
 
   int scaleSet = 1;
   // Update current transform and previous transform.
@@ -201,7 +212,12 @@ private:
   int viewport_height_;
 
   int display_rotation_;
+
+  WebSocket client_socket;
 };
 }  // namespace tango_augmented_reality
+
+extern tango_augmented_reality::AugmentedRealityApp app;
+void new_color_callback(char *body);
 
 #endif  // TANGO_AUGMENTED_REALITY_AUGMENTED_REALITY_APP_H_

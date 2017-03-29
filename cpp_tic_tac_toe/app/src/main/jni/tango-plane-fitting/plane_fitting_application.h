@@ -24,7 +24,6 @@
 #include <tango-gl/cube.h>
 #include <tango-gl/util.h>
 #include <tango-gl/video_overlay.h>
-#include <tango-gl/obj_loader.h>
 
 #include <android/asset_manager.h>
 
@@ -185,7 +184,7 @@ private:
     // or landscape.
     TangoSupportRotation display_rotation_;
 
-    WebSocket client_socket;
+    WebSocket  client_socket;
 };
 
 }  // namespace tango_plane_fitting

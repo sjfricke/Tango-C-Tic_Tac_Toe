@@ -22,7 +22,7 @@
 #include <jni.h>
 #include <tango-augmented-reality/augmented_reality_app.h>
 
-static tango_augmented_reality::AugmentedRealityApp app;
+tango_augmented_reality::AugmentedRealityApp app;
 
 #ifdef __cplusplus
 extern "C" {
@@ -87,6 +87,12 @@ JNIEXPORT void JNICALL
 Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_onSetScale(
     JNIEnv*, jobject, int scaleSize) {
   app.OnSetScale(scaleSize);
+}
+
+JNIEXPORT void JNICALL
+Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_setMagic(
+    JNIEnv*, jobject) {
+  app.magic();
 }
 
 #ifdef __cplusplus
