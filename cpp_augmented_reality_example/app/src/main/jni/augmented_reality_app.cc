@@ -74,13 +74,21 @@ void OnPointCloudAvailableRouter(void* context,
 
 namespace tango_augmented_reality {
 
-void AugmentedRealityApp::OnSetScale(int scaleSize) {
+void AugmentedRealityApp::OnSetScale(int scaleSize, bool callback = true) {
   //glm::vec3 debug = main_scene_.debugPosition();
   // __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"X: %.4f    Y: %.4f   Z: %.4f\n", debug.x, debug.y, debug.z);
   //scaleSet = scaleSize;
 
   // is 0 - 10 -> .3 - 1.0
-  main_scene_.SetBrightness( (static_cast<float>(scaleSize) * 7.0 + 30.0) / 100.0);
+  float newBrightness = (static_cast<float>(scaleSize) * 7.0 + 30.0) / 100.0;
+  main_scene_.SetBrightness( newBrightness );
+
+  if (!callback) {
+    char buf[32];
+    int temp = scaleSize;
+    sprintf(buf, "%d", temp);
+    client_socket.broadcast(1, 0, std::string(buf));
+  }
 }
 
 void AugmentedRealityApp::onTangoEventAvailable(const TangoEvent* event) {
@@ -312,7 +320,9 @@ void AugmentedRealityApp::TangoConnect() {
 
   websocket_connected = client_socket.connectSocket("24.240.32.197", 6419);
   __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"connected: %d \n", websocket_connected);
-  client_socket.setEvent(1, new_color_callback);
+  client_socket.setEvent(1, new_brightness);
+  client_socket.setEvent(2, new_earth_toggle);
+  client_socket.setEvent(3, new_moon_toggle);
 }
 
 void AugmentedRealityApp::OnPause() {
@@ -663,22 +673,62 @@ void AugmentedRealityApp::magic() {
                               plane_normal * 0.05f);
 }
 
-void AugmentedRealityApp::on_new_color(char* body) {
-    __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"on_new_color (%d) : %s \n", -1, body);
-  scaleSet = 5;
-}
 
-void AugmentedRealityApp::EarthToggle(bool isChecked) {
+void AugmentedRealityApp::EarthToggle(bool isChecked,  bool callback) {
   main_scene_.earth_check = isChecked;
+
+  if (!callback) {
+    if (isChecked) {
+      client_socket.broadcast(2, 0, "true");
+    } else {
+      client_socket.broadcast(2, 0, "false");
+    }
+  }
 }
 
-void AugmentedRealityApp::MoonToggle(bool isChecked) {
+void AugmentedRealityApp::MoonToggle(bool isChecked,  bool callback) {
   main_scene_.moon_check = isChecked;
+
+  if (!callback) {
+    if (isChecked) {
+      client_socket.broadcast(3, 0, "true");
+    } else {
+      client_socket.broadcast(3, 0, "false");
+    }
+  }
 }
+
 
 }  // namespace tango_augmented_reality
 
-void new_color_callback(char *body) {
-  __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"new_color_callback : %s \n", body);
-  app.on_new_color(body);
+void new_brightness(char *body) {
+
+  char *end_ptr;
+  int bright_value = strtol(body, &end_ptr, 10);
+
+  if (errno == ERANGE || body == end_ptr) {
+    return;
+
+  } else if (bright_value < 0 || bright_value > 10) {
+    return;
+  } else {
+    app.OnSetScale(bright_value, true);
+  }
+
+}
+
+void new_earth_toggle(char *body) {
+  if (strncasecmp(body, "true", 4) == 0) {
+    app.EarthToggle(true, true);
+  } else if (strncasecmp(body, "false", 5) == 0) {
+    app.EarthToggle(false, true);
+  }
+}
+
+void new_moon_toggle(char *body) {
+  if (strncasecmp(body, "true", 4) == 0) {
+    app.MoonToggle(true, true);
+  } else if (strncasecmp(body, "false", 5) == 0) {
+    app.MoonToggle(false, true);
+  }
 }

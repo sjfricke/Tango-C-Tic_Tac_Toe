@@ -52,7 +52,7 @@ void Scene::InitGLContent(AAssetManager* aasset_manager) {
   camera_ = new tango_gl::Camera();
 
   // Init earth mesh and material
-  earth_mesh_ = tango_gl::meshes::MakeSphereMesh(20, 20, 0.4f);
+  earth_mesh_ = tango_gl::meshes::MakeSphereMesh(20, 20, 0.3f);
   earth_material_ = new tango_gl::Material();
   earth_texture_ = new tango_gl::Texture(aasset_manager, "earth.png");
 
@@ -63,15 +63,15 @@ void Scene::InitGLContent(AAssetManager* aasset_manager) {
 
 
   // Init moon mesh and material
-  moon_mesh_ = tango_gl::meshes::MakeSphereMesh(10, 10, 0.3f);
+  moon_mesh_ = tango_gl::meshes::MakeSphereMesh(10, 10, 0.10f);
   moon_material_ = new tango_gl::Material();
   moon_texture_ = new tango_gl::Texture(aasset_manager, "moon.png");
   moon_material_->SetShader(
-      tango_gl::shaders::GetTexturedVertexShader().c_str(),
-      tango_gl::shaders::GetTexturedFragmentShader().c_str());
+      tango_gl::shaders::GetDiffuseTexturedVertexShader().c_str(),
+      tango_gl::shaders::GetDiffuseTexturedFragmentShader().c_str());
   moon_material_->SetParam("texture", moon_texture_);
 
-  earth_transform_.SetPosition(glm::vec3(0.0f, 0.0f, -5.0f));
+  earth_transform_.SetPosition(glm::vec3(0.0f, 0.0f, -3.0f));
   moon_transform_.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 
 //  cube_ = new tango_gl::Cube();
@@ -199,7 +199,8 @@ void Scene::TranslateMoonForTimestamp(double timestamp) {
     double x = 2.0f * sin(angle);
     double z = 2.0f * cos(angle);
 
-    moon_transform_.SetPosition(glm::vec3(x, 0.0f, z - 5.0f));
+    glm::vec3 earth_temp = earth_transform_.GetPosition();
+    moon_transform_.SetPosition(glm::vec3(earth_temp.x + x, earth_temp.y, z - earth_temp.z));
   }
   moon_last_translation_timestamp_ = timestamp;
 }
@@ -241,6 +242,7 @@ void Scene::SetVideoOverlayRotation(int display_rotation, TangoCameraIntrinsics 
 
 void Scene::SetNewPosition(const glm::vec3& position) {
   earth_transform_.SetPosition(position);
+  //moon_transform_.SetPosition(position);
 }
 
 void Scene::SetNewRotation(const glm::quat& rotation) {
@@ -259,3 +261,4 @@ void Scene::SetBrightness(float scale) {
 
 
 }  // namespace tango_augmented_reality
+

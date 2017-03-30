@@ -106,17 +106,14 @@ class AugmentedRealityApp {
   // @JavaVM display_rotation: orientation of current display.
   void OnDeviceRotationChanged(int display_rotation);
 
-  void OnSetScale(int scaleSize);
+  void OnSetScale(int scaleSize, bool callback);
 
   // Do something cool
   void magic();
 
-  void on_new_color(char* body);
+  void EarthToggle(bool isChecked,  bool callback);
 
-
-  void EarthToggle(bool isChecked);
-
-  void MoonToggle(bool isChecked);
+  void MoonToggle(bool isChecked,  bool callback);
 
   //
   // Callback for point clouds that come in from the Tango service.
@@ -252,6 +249,8 @@ private:
 }  // namespace tango_augmented_reality
 
 extern tango_augmented_reality::AugmentedRealityApp app;
-void new_color_callback(char *body);
+void new_brightness(char *body);
+void new_earth_toggle(char *body);
+void new_moon_toggle(char *body);
 
 #endif  // TANGO_AUGMENTED_REALITY_AUGMENTED_REALITY_APP_H_
