@@ -196,11 +196,11 @@ void Scene::TranslateMoonForTimestamp(double timestamp) {
     double angle = moon_last_translation_angle_ + delta_angle;
     moon_last_translation_angle_ = angle;
 
-    double x = 2.0f * sin(angle);
-    double z = 2.0f * cos(angle);
+    double x = 1.2f * sin(angle);
+    double z = 1.2f * cos(angle);
 
     glm::vec3 earth_temp = earth_transform_.GetPosition();
-    moon_transform_.SetPosition(glm::vec3(earth_temp.x + x, earth_temp.y, z - earth_temp.z));
+    moon_transform_.SetPosition(glm::vec3(earth_temp.x + x, earth_temp.y, earth_temp.z - z));
   }
   moon_last_translation_timestamp_ = timestamp;
 }

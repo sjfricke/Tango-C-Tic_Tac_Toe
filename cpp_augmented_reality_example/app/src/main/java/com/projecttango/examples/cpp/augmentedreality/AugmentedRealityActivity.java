@@ -43,6 +43,8 @@ public class AugmentedRealityActivity extends Activity {
   private GLSurfaceView mGLView;
 
   SeekBar seekBar1;
+  ToggleButton earth_toggle;
+  ToggleButton moon_toggle;
 
   // Screen size for normalizing the touch input for orbiting the render camera.
   private Point mScreenSize = new Point();
@@ -96,9 +98,10 @@ public class AugmentedRealityActivity extends Activity {
       }
     });
 
+    earth_toggle = (ToggleButton) findViewById(R.id.earthToggle);
+    moon_toggle = (ToggleButton) findViewById(R.id.moonToggle);
 
-    ToggleButton earth_toggle = (ToggleButton) findViewById(R.id.earthToggle);
-    ToggleButton moon_toggle = (ToggleButton) findViewById(R.id.moonToggle);
+
     earth_toggle.setChecked(true);
     moon_toggle.setChecked(true);
 
