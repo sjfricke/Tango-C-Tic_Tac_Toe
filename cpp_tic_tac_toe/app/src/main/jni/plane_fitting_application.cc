@@ -283,6 +283,7 @@ void PlaneFittingApplication::OnSurfaceCreated(AAssetManager* aasset_manager) {
   cube_ = new tango_gl::Cube();
   cube_->SetScale(glm::vec3(kCubeScale, kCubeScale, kCubeScale));
   cube_->SetColor(0.7f, 0.7f, 0.7f);
+  cube_->SetPosition(glm::vec3(0.0f, 0.0f, -5.0f));
 
   is_gl_initialized_ = true;
 }
@@ -431,17 +432,13 @@ void PlaneFittingApplication::GLRender(
   video_overlay_->Render(glm::mat4(1.0), glm::mat4(1.0));
   glEnable(GL_DEPTH_TEST);
 
+  // gets data for point cloud render
   TangoPointCloud* point_cloud = nullptr;
   TangoSupport_getLatestPointCloud(point_cloud_manager_, &point_cloud);
   if (point_cloud != nullptr) {
-    const glm::mat4 area_description_opengl_T_depth_t1_tango =
-            GetAreaDescriptionTDepthTransform(point_cloud->timestamp);
-    const glm::mat4 projection_T_depth =
-            projection_matrix_ar_ * color_camera_T_area_description *
-            area_description_opengl_T_depth_t1_tango;
-    point_cloud_renderer_->Render(projection_T_depth,
-                                  area_description_opengl_T_depth_t1_tango,
-                                  point_cloud);
+    const glm::mat4 area_description_opengl_T_depth_t1_tango = GetAreaDescriptionTDepthTransform(point_cloud->timestamp);
+    const glm::mat4 projection_T_depth = projection_matrix_ar_ * color_camera_T_area_description * area_description_opengl_T_depth_t1_tango;
+    point_cloud_renderer_->Render(projection_T_depth, area_description_opengl_T_depth_t1_tango, point_cloud);
   }
 
   glDisable(GL_BLEND);
@@ -498,7 +495,6 @@ void PlaneFittingApplication::OnTouchEvent(float x, float y) {
     return;
   }
 
-  __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"point cloud: %d \n", (int)point_cloud->num_points );
   // Calculate the conversion from the latest color camera position to the
   // most recent depth camera position. This corrects for screen lag between
   // the two systems.

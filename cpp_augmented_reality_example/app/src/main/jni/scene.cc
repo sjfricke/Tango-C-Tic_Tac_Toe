@@ -73,6 +73,11 @@ void Scene::InitGLContent(AAssetManager* aasset_manager) {
   earth_transform_.SetPosition(glm::vec3(0.0f, 0.0f, -5.0f));
   moon_transform_.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 
+  cube_ = new tango_gl::Cube();
+  cube_->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
+  cube_->SetColor(0.7f, 0.7f, 0.7f);
+  cube_->SetPosition(glm::vec3(0.0f, 0.0f, -5.0f));
+
   is_content_initialized_ = true;
 }
 
@@ -114,28 +119,41 @@ void Scene::SetProjectionMatrix(const glm::mat4& projection_matrix) {
 }
 
 void Scene::Clear() {
-  glViewport(0, 0, viewport_width_, viewport_height_);
-  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+//  glViewport(0, 0, viewport_width_, viewport_height_);
+//  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+//  glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 }
 
-void Scene::Render(const glm::mat4& cur_pose_transformation) {
+void Scene::Render(const glm::mat4& cur_pose_transformation, glm::mat4 projection_mat_ar) {
   glViewport(0, 0, viewport_width_, viewport_height_);
 
-  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+  glEnable(GL_CULL_FACE);
+
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   // In first person mode, we directly control camera's motion.
-  camera_->SetTransformationMatrix(cur_pose_transformation);
+  //camera_->SetTransformationMatrix(cur_pose_transformation);
+
+  // We want to render from the perspective of the device, so we will set our
+  // camera based on the transform that was passed in.
+  glm::mat4 color_camera_T_area_description =
+      glm::inverse(cur_pose_transformation);
 
   // If it's first person view, we will render the video overlay in full
   // screen, so we passed identity matrix as view and projection matrix.
   glDisable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
   video_overlay_->Render(glm::mat4(1.0f), glm::mat4(1.0f));
   glEnable(GL_DEPTH_TEST);
+  glDisable(GL_BLEND);
 
-  tango_gl::Render(*earth_mesh_, *earth_material_, earth_transform_, *camera_);
-  tango_gl::Render(*moon_mesh_, *moon_material_, moon_transform_, *camera_);
+  //tango_gl::Render(*earth_mesh_, *earth_material_, earth_transform_, projection_mat_ar, color_camera_T_area_description);
+ // tango_gl::Render(*moon_mesh_, *moon_material_, moon_transform_, projection_mat_ar, color_camera_T_area_description);
+
+  cube_->Render(projection_mat_ar, color_camera_T_area_description);
+
 }
 
 void Scene::RotateEarthForTimestamp(double timestamp, int scale) {
@@ -189,11 +207,30 @@ void Scene::RotateYAxisForTimestamp(double timestamp,
   *last_timestamp = timestamp;
 }
 
-void Scene::SetVideoOverlayRotation(int display_rotation) {
+void Scene::SetVideoOverlayRotation(int display_rotation, TangoCameraIntrinsics color_camera_intrinsics_) {
   if (is_content_initialized_) {
     video_overlay_->SetDisplayRotation(
         static_cast<TangoSupportRotation>(display_rotation));
   }
+
+  video_overlay_->SetTextureOffset(
+      viewport_width_, viewport_height_,
+      static_cast<float>(color_camera_intrinsics_.width),
+      static_cast<float>(color_camera_intrinsics_.height));
+
 }
+
+void Scene::SetNewPosition(const glm::vec3& position) {
+  cube_->SetPosition(position);
+}
+
+void Scene::SetNewRotation(const glm::quat& rotation) {
+  cube_->SetRotation(rotation);
+}
+
+glm::vec3 Scene::debugPosition() {
+  return earth_transform_.GetPosition();
+}
+
 
 }  // namespace tango_augmented_reality

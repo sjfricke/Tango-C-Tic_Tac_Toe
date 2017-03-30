@@ -22,7 +22,7 @@
 #include <glm/glm.hpp>
 #include <tango_support_api.h>
 
-namespace tango_plane_fitting {
+namespace tango_augmented_reality {
 
 void PlaneTransform(const glm::vec4& in_plane, const glm::mat4& out_T_in,
                     glm::vec4* out_plane);

@@ -25,7 +25,6 @@
 #include "tango-gl/bounding_box.h"
 #include "tango-gl/drawable_object.h"
 #include "tango-gl/segment.h"
-#include "material.h"
 
 namespace tango_gl {
 class Mesh : public DrawableObject {
@@ -37,10 +36,6 @@ class Mesh : public DrawableObject {
   void SetBoundingBox();
   void SetLightDirection(const glm::vec3& light_direction);
   void Render(const glm::mat4& projection_mat, const glm::mat4& view_mat) const;
-//  void Render(const glm::mat4& projection_mat, const glm::mat4& view_mat,
-//              const Material& material, const Texture& texture) const;
-void Render(const glm::mat4& projection_mat, const glm::mat4& view_mat,
-            const Material& material) const;
   bool IsIntersecting(const Segment& segment);
 
  protected:

@@ -75,8 +75,9 @@ void OnPointCloudAvailableRouter(void* context,
 namespace tango_augmented_reality {
 
 void AugmentedRealityApp::OnSetScale(int scaleSize) {
-  //LOGE("SCALE: %d", scaleSize);
-  scaleSet = scaleSize;
+  glm::vec3 debug = main_scene_.debugPosition();
+  __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"X: %.4f    Y: %.4f   Z: %.4f\n", debug.x, debug.y, debug.z);
+  //scaleSet = scaleSize;
 }
 
 void AugmentedRealityApp::onTangoEventAvailable(const TangoEvent* event) {
@@ -158,19 +159,20 @@ void AugmentedRealityApp::TangoSetupConfig() {
     std::exit(EXIT_SUCCESS);
   }
 
+  //TODO defaulted to true?
   // Set auto-recovery for motion tracking as requested by the user.
-  int ret =
-      TangoConfig_setBool(tango_config_, "config_enable_auto_recovery", true);
-  if (ret != TANGO_SUCCESS) {
-    LOGE(
-        "AugmentedRealityApp: config_enable_auto_recovery() failed with error"
-        "code: %d",
-        ret);
-    std::exit(EXIT_SUCCESS);
-  }
+//  int ret =
+//      TangoConfig_setBool(tango_config_, "config_enable_auto_recovery", true);
+//  if (ret != TANGO_SUCCESS) {
+//    LOGE(
+//        "AugmentedRealityApp: config_enable_auto_recovery() failed with error"
+//        "code: %d",
+//        ret);
+//    std::exit(EXIT_SUCCESS);
+//  }
 
   // Enable color camera from config.
-  ret = TangoConfig_setBool(tango_config_, "config_enable_color_camera", true);
+  int ret = TangoConfig_setBool(tango_config_, "config_enable_color_camera", true);
   if (ret != TANGO_SUCCESS) {
     LOGE(
         "AugmentedRealityApp: config_enable_color_camera() failed with error"
@@ -374,15 +376,19 @@ void AugmentedRealityApp::UpdateViewportAndProjectionMatrix() {
   float cx = static_cast<float>(color_camera_intrinsics_.cx);
   float cy = static_cast<float>(color_camera_intrinsics_.cy);
 
-  glm::mat4 projection_mat_ar;
+  //glm::mat4 projection_mat_ar;
   projection_mat_ar = tango_gl::Camera::ProjectionMatrixForCameraIntrinsics(
       image_width, image_height, fx, fy, cx, cy, kArCameraNearClippingPlane,
       kArCameraFarClippingPlane);
   image_plane_ratio = image_height / image_width;
+
+  //sets camera's projection matrix
   main_scene_.SetProjectionMatrix(projection_mat_ar);
 
   float screen_ratio = static_cast<float>(viewport_height_) /
                        static_cast<float>(viewport_width_);
+
+
   // In the following code, we place the view port at (0, 0) from the bottom
   // left corner of the screen. By placing it at (0,0), the view port may not
   // be exactly centered on the screen. However, this won't affect AR
@@ -426,11 +432,10 @@ void AugmentedRealityApp::OnDrawFrame() {
   }
 
   if (!is_video_overlay_rotation_set_) {
-    main_scene_.SetVideoOverlayRotation(display_rotation_);
+    main_scene_.SetVideoOverlayRotation(display_rotation_, color_camera_intrinsics_);
     is_video_overlay_rotation_set_ = true;
   }
 
-  double video_overlay_timestamp;
   TangoErrorType status = TangoService_updateTextureExternalOes(
       TANGO_CAMERA_COLOR, main_scene_.GetVideoOverlayTextureId(),
       &video_overlay_timestamp);
@@ -455,11 +460,11 @@ void AugmentedRealityApp::OnDrawFrame() {
         UpdateTransform(matrix_transform.matrix, video_overlay_timestamp);
       }
 
-      main_scene_.RotateEarthForTimestamp(video_overlay_timestamp, scaleSet);
-      main_scene_.RotateMoonForTimestamp(video_overlay_timestamp);
-      main_scene_.TranslateMoonForTimestamp(video_overlay_timestamp);
+//      main_scene_.RotateEarthForTimestamp(video_overlay_timestamp, scaleSet);
+//      main_scene_.RotateMoonForTimestamp(video_overlay_timestamp);
+//      main_scene_.TranslateMoonForTimestamp(video_overlay_timestamp);
 
-      main_scene_.Render(cur_start_service_T_camera_);
+      main_scene_.Render(cur_start_service_T_camera_, projection_mat_ar);
     } else {
       // When the pose status is not valid, it indicates the tracking has
       // been lost. In this case, we simply stop rendering.
@@ -539,10 +544,121 @@ void AugmentedRealityApp::FormatTransformString() {
   string_stream.flush();
 }
 
+glm::mat4 AugmentedRealityApp::GetAreaDescriptionTDepthTransform(
+      double timestamp) {
+  glm::mat4 area_description_opengl_T_depth_tango;
+  TangoMatrixTransformData matrix_transform;
+
+  // When drift correction mode is enabled in config file, we need to query
+  // the device with respect to Area Description pose in order to use the
+  // drift corrected pose.
+  //
+  // Note that if you don't want to use the drift corrected pose, the
+  // normal device with respect to start of service pose is still available.
+  TangoSupport_getMatrixTransformAtTime(
+      timestamp, TANGO_COORDINATE_FRAME_AREA_DESCRIPTION,
+      TANGO_COORDINATE_FRAME_CAMERA_DEPTH, TANGO_SUPPORT_ENGINE_OPENGL,
+      TANGO_SUPPORT_ENGINE_TANGO, ROTATION_IGNORED, &matrix_transform);
+  if (matrix_transform.status_code != TANGO_POSE_VALID) {
+    // When the pose status is not valid, it indicates the tracking has
+    // been lost. In this case, we simply stop rendering.
+    //
+    // This is also the place to display UI to suggest the user walk
+    // to recover tracking.
+    LOGE(
+        "PlaneFittingApplication: Could not find a valid matrix transform at "
+            "time %lf for the color camera.",
+        video_overlay_timestamp);
+  } else {
+    area_description_opengl_T_depth_tango =
+        glm::make_mat4(matrix_transform.matrix);
+  }
+  return area_description_opengl_T_depth_tango;
+}
+
 void AugmentedRealityApp::magic() {
   TangoPointCloud* point_cloud = nullptr;
   TangoSupport_getLatestPointCloud(point_cloud_manager_, &point_cloud);
-  __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"point cloud: %d \n", (int)point_cloud->num_points );
+  if (point_cloud == nullptr) {
+    return;
+  }
+  //__android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"point cloud: %d \n", (int)point_cloud->num_points );
+
+  // Calculate the conversion from the latest color camera position to the
+  // most recent depth camera position. This corrects for screen lag between
+  // the two systems.
+  TangoPoseData pose_depth_camera_t0_T_color_camera_t1;
+
+  int ret = TangoSupport_calculateRelativePose(
+      point_cloud->timestamp, TANGO_COORDINATE_FRAME_CAMERA_DEPTH,
+      video_overlay_timestamp, TANGO_COORDINATE_FRAME_CAMERA_COLOR,
+      &pose_depth_camera_t0_T_color_camera_t1);
+
+  if (ret != TANGO_SUCCESS) {
+    LOGE("%s: could not calculate relative pose", __func__);
+    return;
+  }
+
+  // middle of screen
+  glm::vec2 uv(.5, .5);
+
+  double identity_translation[3] = {0.0, 0.0, 0.0};
+  double identity_orientation[4] = {0.0, 0.0, 0.0, 1.0};
+  glm::dvec3 double_depth_position;
+  glm::dvec4 double_depth_plane_equation;
+
+  if (TangoSupport_fitPlaneModelNearPoint(
+      point_cloud, identity_translation, identity_orientation,
+      glm::value_ptr(uv), static_cast<TangoSupportRotation>(display_rotation_),
+      pose_depth_camera_t0_T_color_camera_t1.translation,
+      pose_depth_camera_t0_T_color_camera_t1.orientation,
+      glm::value_ptr(double_depth_position),
+      glm::value_ptr(double_depth_plane_equation)) != TANGO_SUCCESS) {
+    return;  // Assume error has already been reported.
+  }
+
+  const glm::vec3 depth_position =
+      static_cast<glm::vec3>(double_depth_position);
+  const glm::vec4 depth_plane_equation =
+      static_cast<glm::vec4>(double_depth_plane_equation);
+
+
+  const glm::mat4 area_description_opengl_T_depth_tango =
+      GetAreaDescriptionTDepthTransform(point_cloud->timestamp);
+
+  // Transform to Area Description coordinates
+  const glm::vec4 area_description_position =
+      area_description_opengl_T_depth_tango * glm::vec4(depth_position, 1.0f);
+
+  glm::vec4 area_description_plane_equation;
+
+  PlaneTransform(depth_plane_equation, area_description_opengl_T_depth_tango,
+                 &area_description_plane_equation);
+
+  const glm::vec3 plane_normal(area_description_plane_equation);
+
+
+  // Use world up as the second vector, unless they are nearly parallel.
+  // In that case use world +Z.
+  glm::vec3 normal_Y = glm::vec3(0.0f, 1.0f, 0.0f);
+  const glm::vec3 world_up = glm::vec3(0.0f, 1.0f, 0.0f);
+  const float kWorldUpThreshold = 0.5f;
+  if (glm::dot(plane_normal, world_up) > kWorldUpThreshold) {
+    normal_Y = glm::vec3(0.0f, 0.0f, 1.0f);
+  }
+
+  const glm::vec3 normal_Z = glm::normalize(glm::cross(plane_normal, normal_Y));
+  normal_Y = glm::normalize(glm::cross(normal_Z, plane_normal));
+
+  glm::mat3 rotation_matrix;
+  rotation_matrix[0] = plane_normal;
+  rotation_matrix[1] = normal_Y;
+  rotation_matrix[2] = normal_Z;
+  const glm::quat rotation = glm::toQuat(rotation_matrix);
+
+  main_scene_.SetNewRotation(rotation);
+  main_scene_.SetNewPosition(glm::vec3(area_description_position) +
+                              plane_normal * 0.05f);
 }
 
 void AugmentedRealityApp::on_new_color(char* body) {

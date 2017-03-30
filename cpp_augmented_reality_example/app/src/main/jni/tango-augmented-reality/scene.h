@@ -33,6 +33,7 @@
 #include <tango-gl/meshes.h>
 #include <tango-gl/shaders.h>
 #include <tango-gl/tango-gl.h>
+#include <tango-gl/cube.h>
 
 namespace tango_augmented_reality {
 
@@ -58,7 +59,7 @@ class Scene {
   void Clear();
 
   // Render loop.
-  void Render(const glm::mat4& cur_pose_transformation);
+  void Render(const glm::mat4& cur_pose_transformation, glm::mat4 projection_mat_ar);
 
   // Get video overlay texture id.
   // @return: texture id of video overlay's texture.
@@ -103,9 +104,15 @@ class Scene {
                                double* last_angle, double* last_timestamp, int scale);
 
   // Set video overlay's orientation based on current device orientation.
-  void SetVideoOverlayRotation(int display_rotation);
+  void SetVideoOverlayRotation(int display_rotation, TangoCameraIntrinsics color_camera_intrinsics_);
 
- private:
+  void SetNewPosition(const glm::vec3& position);
+
+  void SetNewRotation(const glm::quat& rotation);
+
+  glm::vec3 debugPosition();
+
+private:
   // Video overlay drawable object to display the camera image.
   tango_gl::VideoOverlay* video_overlay_;
 
@@ -140,6 +147,8 @@ class Scene {
   tango_gl::Transform earth_transform_;
   tango_gl::Transform moon_transform_;
 
+  tango_gl::Cube* cube_;
+
   // Last pose timestamp received
   double earth_last_timestamp_;
   double earth_last_angle_;
@@ -153,6 +162,7 @@ class Scene {
 
   int viewport_width_;
   int viewport_height_;
+
 };
 }  // namespace tango_augmented_reality
 

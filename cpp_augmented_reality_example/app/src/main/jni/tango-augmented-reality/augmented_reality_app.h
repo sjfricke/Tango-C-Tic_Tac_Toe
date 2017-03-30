@@ -32,6 +32,9 @@
 
 #include "tango-augmented-reality/plane_fitting.h"
 
+#include <glm/gtc/matrix_access.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 namespace tango_augmented_reality {
 
 // AugmentedRealityApp handles the application lifecycle and resources.
@@ -154,6 +157,15 @@ private:
   // Release all non-OpenGL resources that allocate from the program.
   void DeleteResources();
 
+  // Return transform for depth camera in Tango coordinate convention with
+  // respect to
+  // Area Description in OpenGL coordinate convention. The reason to switch from
+  // one convention to
+  // the other is an optimization that allow us to avoid transforming the depth
+  // points into OpenGL
+  // coordinate frame.
+  glm::mat4 GetAreaDescriptionTDepthTransform(double timestamp);
+
   // Current position of the Color Camera with respect to Start of Service.
   glm::mat4 cur_start_service_T_camera_;
   // prev_start_service_T_camera_, transform_counter_ and transform_string_ are
@@ -219,6 +231,12 @@ private:
   int viewport_height_;
 
   int display_rotation_;
+
+  double video_overlay_timestamp;
+
+  // Cached transforms
+  // OpenGL projection matrix.
+  glm::mat4 projection_mat_ar;
 
   WebSocket client_socket;
 

@@ -42,7 +42,9 @@ LOCAL_SRC_FILES := augmented_reality_app.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/texture.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/transform.cc \
                    $(PROJECT_ROOT_FROM_JNI)/tango_gl/util.cc \
-                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/video_overlay.cc
+                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/video_overlay.cc \
+                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/cube.cc \
+                   $(PROJECT_ROOT_FROM_JNI)/tango_gl/mesh.cc \
 
 LOCAL_C_INCLUDES := $(PROJECT_ROOT)/tango_gl/include \
                     $(PROJECT_ROOT)/third_party/glm/ \
