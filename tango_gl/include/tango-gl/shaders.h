@@ -21,6 +21,8 @@
 
 namespace tango_gl {
 namespace shaders {
+std::string kFallbackVS();
+std::string kFallbackPS();
 std::string GetBasicVertexShader();
 std::string GetBasicFragmentShader();
 std::string GetTexturedVertexShader();
@@ -30,6 +32,8 @@ std::string GetVideoOverlayVertexShader();
 std::string GetVideoOverlayFragmentShader();
 std::string GetVideoOverlayTexture2DFragmentShader();
 std::string GetShadedVertexShader();
+std::string GetPhongVertexShader();
+std::string GetPhongFragmentShader();
 }  // namespace shaders
 }  // namespace tango_gl
 #endif  // TANGO_GL_SHADERS_H_
