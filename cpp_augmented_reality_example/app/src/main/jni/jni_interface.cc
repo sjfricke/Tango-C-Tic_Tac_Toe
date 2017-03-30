@@ -95,6 +95,18 @@ Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_setMagic(
   app.magic();
 }
 
+JNIEXPORT void JNICALL
+Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_earthToggle(
+    JNIEnv*, jobject, bool isChecked) {
+  app.EarthToggle(isChecked);
+}
+
+JNIEXPORT void JNICALL
+Java_com_projecttango_examples_cpp_augmentedreality_TangoJNINative_moonToggle(
+    JNIEnv*, jobject, bool isChecked) {
+  app.MoonToggle(isChecked);
+}
+
 #ifdef __cplusplus
 }
 #endif

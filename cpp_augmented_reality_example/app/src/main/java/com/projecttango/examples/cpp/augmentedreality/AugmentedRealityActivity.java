@@ -28,7 +28,9 @@ import android.os.IBinder;
 import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.CompoundButton;
 import android.widget.SeekBar;
+import android.widget.ToggleButton;
 
 /**
  * The main activity of the application which shows debug information and a
@@ -91,6 +93,25 @@ public class AugmentedRealityActivity extends Activity {
 
       public void onStopTrackingTouch(SeekBar seekBar) {
         TangoJNINative.onSetScale(progressChangedValue);
+      }
+    });
+
+
+    ToggleButton earth_toggle = (ToggleButton) findViewById(R.id.earthToggle);
+    ToggleButton moon_toggle = (ToggleButton) findViewById(R.id.moonToggle);
+    earth_toggle.setChecked(true);
+    moon_toggle.setChecked(true);
+
+    earth_toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        TangoJNINative.earthToggle(isChecked);
+      }
+    });
+
+
+    moon_toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+      public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        TangoJNINative.moonToggle(isChecked);
       }
     });
 

@@ -32,6 +32,8 @@ std::string GetVideoOverlayVertexShader();
 std::string GetVideoOverlayFragmentShader();
 std::string GetVideoOverlayTexture2DFragmentShader();
 std::string GetShadedVertexShader();
+std::string GetDiffuseTexturedVertexShader();
+std::string GetDiffuseTexturedFragmentShader();
 std::string GetPhongVertexShader();
 std::string GetPhongFragmentShader();
 }  // namespace shaders

@@ -90,7 +90,7 @@ class Scene {
 
   // Change the earth transformation to make it rotate over its Y axis over
   // time
-  void RotateEarthForTimestamp(double timestamp, int scale);
+  void RotateEarthForTimestamp(double timestamp);
 
   // Change the moon transformation to make it rotate over its Y axis over
   // time
@@ -109,6 +109,12 @@ class Scene {
   void SetNewPosition(const glm::vec3& position);
 
   void SetNewRotation(const glm::quat& rotation);
+
+  void SetBrightness(float scale);
+
+  // bool
+  bool moon_check = true;
+  bool earth_check = true;
 
   glm::vec3 debugPosition();
 

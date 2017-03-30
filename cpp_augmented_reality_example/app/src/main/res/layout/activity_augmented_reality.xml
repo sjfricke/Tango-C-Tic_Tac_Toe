@@ -29,11 +29,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:max="10"
-        android:progress="1"
+        android:progress="5"
         />
 
     <Button
-        android:text="Magic?"
+        android:text="SET ON SURFACE"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/magicButton"
@@ -41,5 +41,25 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
         android:layout_marginBottom="30dp"/>
+
+    <ToggleButton
+        android:text="Earth"
+        android:textOn="Earth on"
+        android:textOff="Earth off"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/simpleSeekBar"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/earthToggle"/>
+
+    <ToggleButton
+        android:text="Moon"
+        android:textOn="Moon on"
+        android:textOff="Moon off"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/earthToggle"
+        android:layout_alignStart="@+id/earthToggle"
+        android:id="@+id/moonToggle"/>
 
 </RelativeLayout>

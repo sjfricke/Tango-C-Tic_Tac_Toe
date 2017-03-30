@@ -75,9 +75,12 @@ void OnPointCloudAvailableRouter(void* context,
 namespace tango_augmented_reality {
 
 void AugmentedRealityApp::OnSetScale(int scaleSize) {
-  glm::vec3 debug = main_scene_.debugPosition();
-  __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"X: %.4f    Y: %.4f   Z: %.4f\n", debug.x, debug.y, debug.z);
+  //glm::vec3 debug = main_scene_.debugPosition();
+  // __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"X: %.4f    Y: %.4f   Z: %.4f\n", debug.x, debug.y, debug.z);
   //scaleSet = scaleSize;
+
+  // is 0 - 10 -> .3 - 1.0
+  main_scene_.SetBrightness( (static_cast<float>(scaleSize) * 7.0 + 30.0) / 100.0);
 }
 
 void AugmentedRealityApp::onTangoEventAvailable(const TangoEvent* event) {
@@ -460,9 +463,9 @@ void AugmentedRealityApp::OnDrawFrame() {
         UpdateTransform(matrix_transform.matrix, video_overlay_timestamp);
       }
 
-//      main_scene_.RotateEarthForTimestamp(video_overlay_timestamp, scaleSet);
-//      main_scene_.RotateMoonForTimestamp(video_overlay_timestamp);
-//      main_scene_.TranslateMoonForTimestamp(video_overlay_timestamp);
+      main_scene_.RotateEarthForTimestamp(video_overlay_timestamp);
+      main_scene_.RotateMoonForTimestamp(video_overlay_timestamp);
+      main_scene_.TranslateMoonForTimestamp(video_overlay_timestamp);
 
       main_scene_.Render(cur_start_service_T_camera_, projection_mat_ar);
     } else {
@@ -656,7 +659,6 @@ void AugmentedRealityApp::magic() {
   rotation_matrix[2] = normal_Z;
   const glm::quat rotation = glm::toQuat(rotation_matrix);
 
-  main_scene_.SetNewRotation(rotation);
   main_scene_.SetNewPosition(glm::vec3(area_description_position) +
                               plane_normal * 0.05f);
 }
@@ -666,6 +668,13 @@ void AugmentedRealityApp::on_new_color(char* body) {
   scaleSet = 5;
 }
 
+void AugmentedRealityApp::EarthToggle(bool isChecked) {
+  main_scene_.earth_check = isChecked;
+}
+
+void AugmentedRealityApp::MoonToggle(bool isChecked) {
+  main_scene_.moon_check = isChecked;
+}
 
 }  // namespace tango_augmented_reality
 

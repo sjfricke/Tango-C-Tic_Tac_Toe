@@ -52,14 +52,15 @@ void Scene::InitGLContent(AAssetManager* aasset_manager) {
   camera_ = new tango_gl::Camera();
 
   // Init earth mesh and material
-  earth_mesh_ = tango_gl::meshes::MakeSphereMesh(20, 20, 1.0f);
+  earth_mesh_ = tango_gl::meshes::MakeSphereMesh(20, 20, 0.4f);
   earth_material_ = new tango_gl::Material();
   earth_texture_ = new tango_gl::Texture(aasset_manager, "earth.png");
 
   earth_material_->SetShader(
-      tango_gl::shaders::GetTexturedVertexShader().c_str(),
-      tango_gl::shaders::GetTexturedFragmentShader().c_str());
+      tango_gl::shaders::GetDiffuseTexturedVertexShader().c_str(),
+      tango_gl::shaders::GetDiffuseTexturedFragmentShader().c_str());
   earth_material_->SetParam("texture", earth_texture_);
+
 
   // Init moon mesh and material
   moon_mesh_ = tango_gl::meshes::MakeSphereMesh(10, 10, 0.3f);
@@ -83,8 +84,8 @@ void Scene::InitGLContent(AAssetManager* aasset_manager) {
 
   cube_material_->SetShader(
       tango_gl::shaders::GetTexturedVertexShader().c_str(),
-      tango_gl::shaders::GetTexturedFragmentShader().c_str());
-  cube_material_->SetParam("texture", earth_texture_);
+      tango_gl::shaders::GetTexturedVertexShader().c_str());
+  cube_material_->SetParam("texture", cube_texture_);
   cube_transform_.SetPosition(glm::vec3(0.0f, 0.0f, -5.0f));
 
 
@@ -159,17 +160,24 @@ void Scene::Render(const glm::mat4& cur_pose_transformation, glm::mat4 projectio
   glEnable(GL_DEPTH_TEST);
   glDisable(GL_BLEND);
 
-  //tango_gl::Render(*earth_mesh_, *earth_material_, earth_transform_, projection_mat_ar, color_camera_T_area_description);
- // tango_gl::Render(*moon_mesh_, *moon_material_,  moon_transform_, projection_mat_ar, color_camera_T_area_description);
+  if (earth_check) {
+    tango_gl::Render(*earth_mesh_, *earth_material_, earth_transform_, projection_mat_ar,
+                     color_camera_T_area_description);
+  }
 
-  tango_gl::Render(*cube_mesh_, *cube_material_, cube_transform_, projection_mat_ar, color_camera_T_area_description);
+  if (moon_check) {
+    tango_gl::Render(*moon_mesh_, *moon_material_, moon_transform_, projection_mat_ar,
+                     color_camera_T_area_description);
+  }
+
+  //tango_gl::Render(*cube_mesh_, *cube_material_, cube_transform_, projection_mat_ar, color_camera_T_area_description);
   //cube_->Render(projection_mat_ar, color_camera_T_area_description);
 
 }
 
-void Scene::RotateEarthForTimestamp(double timestamp, int scale) {
+void Scene::RotateEarthForTimestamp(double timestamp) {
   RotateYAxisForTimestamp(timestamp, &earth_transform_, &earth_last_angle_,
-                          &earth_last_timestamp_, scale);
+                          &earth_last_timestamp_, 1);
 }
 
 void Scene::RotateMoonForTimestamp(double timestamp) {
@@ -232,14 +240,20 @@ void Scene::SetVideoOverlayRotation(int display_rotation, TangoCameraIntrinsics 
 }
 
 void Scene::SetNewPosition(const glm::vec3& position) {
-  cube_transform_.SetPosition(position);
+  earth_transform_.SetPosition(position);
 }
 
 void Scene::SetNewRotation(const glm::quat& rotation) {
-  cube_transform_.SetRotation(rotation);
+  earth_transform_.SetRotation(rotation);
 }
 
-glm::vec3 Scene::debugPosition() {
+void Scene::SetBrightness(float scale) {
+  earth_material_->brightness = scale;
+  moon_material_->brightness = scale;
+};
+
+
+  glm::vec3 Scene::debugPosition() {
   return earth_transform_.GetPosition();
 }
 

@@ -57,6 +57,10 @@ namespace tango_gl {
 
     glUseProgram(material.GetShaderProgram());
 
+    // set light
+    GLint uniform_light_dir_ = material.GetUniformLightDir();
+    glUniform1fv(uniform_light_dir_, 1, &material.brightness);
+
     // Set up shader uniforms.
     GLint uniform_mvp_mat = material.GetUniformModelViewProjMatrix();
     if (uniform_mvp_mat != -1) {
@@ -231,6 +235,9 @@ namespace tango_gl {
     if (!result) {
       SetFallbackShader();
     }
+
+    __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"SHADER COMPILE STATUS: %d \n", result);
+
     return result;
   }
 
@@ -278,6 +285,9 @@ namespace tango_gl {
     uniform_mv_mat_ = glGetUniformLocation(shader_program_, "mv");
     uniform_m_mat_ = glGetUniformLocation(shader_program_, "m");
     uniform_normal_mat_ = glGetUniformLocation(shader_program_, "normal_mat");
+
+    uniform_light_dir_ = glGetUniformLocation(shader_program_, "light_dir");
+
     return true;
   }
 

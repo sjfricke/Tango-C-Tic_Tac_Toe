@@ -122,6 +122,11 @@ namespace tango_gl {
     // Get the shader program's Normal matrix uniform index.
     GLint GetUniformNormalMatrix() const { return uniform_normal_mat_; }
 
+    GLint GetUniformLightDir() const { return uniform_light_dir_; }
+
+    float brightness = 0.5f;
+
+
   private:
     // Set the shader for this material to the fallback shader.  This
     // will never fail.
@@ -162,6 +167,8 @@ namespace tango_gl {
 
     // Current shader program's Normal matrix uniform index.
     GLint uniform_normal_mat_;
+
+    GLint uniform_light_dir_;
 
     // A hash table of float parameters.
     std::unordered_map<GLint, float> params_float_;

@@ -84,4 +84,8 @@ public class TangoJNINative {
 
   //What it do? Who knows
   public static native void setMagic();
+
+  public static native void earthToggle(boolean isChecked);
+
+  public static native void moonToggle(boolean isChecked);
 }

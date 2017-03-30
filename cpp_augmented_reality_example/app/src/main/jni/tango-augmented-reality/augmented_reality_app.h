@@ -113,6 +113,11 @@ class AugmentedRealityApp {
 
   void on_new_color(char* body);
 
+
+  void EarthToggle(bool isChecked);
+
+  void MoonToggle(bool isChecked);
+
   //
   // Callback for point clouds that come in from the Tango service.
   //
