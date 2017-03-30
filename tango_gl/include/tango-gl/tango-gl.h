@@ -177,5 +177,8 @@ namespace tango_gl {
   void Render(const StaticMesh& mesh, const Material& material,
               const Transform& transform, const glm::mat4& projection_mat, const glm::mat4& view_mat);
 
+  void Render(const StaticMesh& mesh, const Material& material,
+              const Transform& transform, const Camera& camera);
+
 }  // namespace tango_gl
 #endif  // TANGO_GL_TANGO_GL_H_

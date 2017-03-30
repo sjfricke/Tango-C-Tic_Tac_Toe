@@ -148,6 +148,10 @@ private:
   tango_gl::Transform moon_transform_;
 
   tango_gl::Cube* cube_;
+  tango_gl::StaticMesh* cube_mesh_;
+  tango_gl::Texture* cube_texture_;
+  tango_gl::Material* cube_material_;
+  tango_gl::Transform cube_transform_;
 
   // Last pose timestamp received
   double earth_last_timestamp_;
