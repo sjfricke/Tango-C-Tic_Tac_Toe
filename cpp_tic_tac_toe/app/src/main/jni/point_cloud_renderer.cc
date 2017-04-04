@@ -57,7 +57,7 @@ const std::string kPointCloudFragmentShader =
 
 PointCloudRenderer::PointCloudRenderer()
     : plane_distance_(0.05f),
-      debug_colors_(false),
+      debug_colors_(true),
       plane_model_(glm::vec4(0.0, 0.0, 1.0, 0.0)) {
 
   shader_program_ = tango_gl::util::CreateProgram(

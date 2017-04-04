@@ -184,13 +184,13 @@ public class MainActivity extends Activity {
   }
 
   private void configureDrawerButton() {
-    mDrawerButton = (ImageButton) findViewById(R.id.drawer_button);
-    mDrawerButton.setOnClickListener(new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          mDrawerLayout.openDrawer(Gravity.START);
-        }
-      });
+//    mDrawerButton = (ImageButton) findViewById(R.id.drawer_button);
+//    mDrawerButton.setOnClickListener(new OnClickListener() {
+//        @Override
+//        public void onClick(View v) {
+//          mDrawerLayout.openDrawer(Gravity.START);
+//        }
+//      });
 
     PreferenceManager.setDefaultValues(this, R.xml.settings, false);
     mPreferences = PreferenceManager.getDefaultSharedPreferences(this);

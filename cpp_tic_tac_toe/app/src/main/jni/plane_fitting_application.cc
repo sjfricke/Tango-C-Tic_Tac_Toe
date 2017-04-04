@@ -261,7 +261,7 @@ void PlaneFittingApplication::TangoConnect() {
 
   // Sets up websocket
   client_socket.connectSocket("24.240.32.197", 6419);
-  client_socket.setEvent(1, new_color_callback);
+  //client_socket.setEvent(1, new_color_callback);
   //client_socket.setEvent(1, [this](char*x){this->on_new_color(x);} ) ;
 }
 
@@ -561,9 +561,35 @@ void PlaneFittingApplication::OnTouchEvent(float x, float y) {
   rotation_matrix[2] = normal_Z;
   const glm::quat rotation = glm::toQuat(rotation_matrix);
 
-  cube_->SetRotation(rotation);
-  cube_->SetPosition(glm::vec3(area_description_position) +
-                     plane_normal * kCubeScale);
+    glm::vec3 test = glm::vec3(area_description_position) + plane_normal * kCubeScale;
+
+//  __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"Area_Des_pos: x: %.3f\ty: %.3f\tz: %.3f\nplane_normal: x: %.3f\ty: %.3f\tz: %.3f\npos: x: %.3f\ty: %.3f\tz: %.3f  \n",
+//                      area_description_position.x, area_description_position.y, area_description_position.z,
+//  plane_normal.x, plane_normal.y, plane_normal.z,
+//  test.x, test.y, test.z);
+
+//    __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"depth_pos: x: %.3f\ty: %.3f\tz: %.3f\ndepth_plane: x: %.3f\ty: %.3f\tz: %.3f\npos: x: %.3f\ty: %.3f\tz: %.3f  \n",
+//                       depth_position.x, depth_position.y, depth_position.z,
+//                        depth_plane_equation.x, depth_plane_equation.y, depth_plane_equation.z,
+//                       test.x, test.y, test.z);
+
+    // first on touch sets reference point
+    if (!reference_set) {
+      reference_set = true;
+      SetRenderDebugPointCloud(false);
+      reference_point = glm::vec3(area_description_position);
+      return;
+    }
+
+    cube_->SetRotation(rotation);
+    cube_->SetPosition(glm::vec3(area_description_position) +
+                         plane_normal * kCubeScale);
+
+    std::stringstream ss;
+    ss << area_description_position.x <<  "," << area_description_position.y << "," << area_description_position.z;
+    std::string s = ss.str();
+
+    client_socket.broadcast(2, 0, s);
 }
 
 

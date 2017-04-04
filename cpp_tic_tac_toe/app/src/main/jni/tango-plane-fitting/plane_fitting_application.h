@@ -25,6 +25,9 @@
 #include <tango-gl/util.h>
 #include <tango-gl/video_overlay.h>
 
+// because gnustl doesnt support std::to_string
+#include <sstream>
+
 #include <android/asset_manager.h>
 
 #include "tango-plane-fitting/WebSocket.h"
@@ -184,7 +187,12 @@ private:
     // or landscape.
     TangoSupportRotation display_rotation_;
 
+    // For keeping connection with websocket server
     WebSocket  client_socket;
+
+    // If true, displays point cloud dot render data
+    bool reference_set = false;
+    glm::vec3 reference_point;
 };
 
 }  // namespace tango_plane_fitting
