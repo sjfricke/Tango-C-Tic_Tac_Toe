@@ -181,4 +181,12 @@ public class AugmentedRealityActivity extends Activity {
     }
     mGLView.requestRender();
   }
+
+  public void updateMoonUI(int test) {
+    if (test == 1) {
+      earth_toggle.setChecked(true);
+    } else if (test == 2) {
+      earth_toggle.setChecked(false);
+    }
+  }
 }

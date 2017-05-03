@@ -260,7 +260,8 @@ void PlaneFittingApplication::TangoConnect() {
   TangoSupport_initializeLibrary();
 
   // Sets up websocket
-  client_socket.connectSocket("24.240.32.197", 6419);
+  client_socket.connectSocket("24.240.32.197", 5000);
+  client_socket.setEvent(2, new_cube_callback);
   //client_socket.setEvent(1, new_color_callback);
   //client_socket.setEvent(1, [this](char*x){this->on_new_color(x);} ) ;
 }
@@ -280,10 +281,16 @@ void PlaneFittingApplication::OnSurfaceCreated(AAssetManager* aasset_manager) {
   video_overlay_->SetDisplayRotation(display_rotation_);
   point_cloud_renderer_ = new PointCloudRenderer();
 
-  cube_ = new tango_gl::Cube();
-  cube_->SetScale(glm::vec3(kCubeScale, kCubeScale, kCubeScale));
-  cube_->SetColor(0.7f, 0.7f, 0.7f);
-  cube_->SetPosition(glm::vec3(0.0f, 0.0f, -5.0f));
+  for( int i = 0; i < max_cube; i++) {
+    cube_[i] = new tango_gl::Cube();
+    cube_[i]->SetScale(glm::vec3(kCubeScale, kCubeScale, kCubeScale));
+  }
+  cube_count = 0;
+
+//  cube_ = new tango_gl::Cube();
+//  cube_->SetScale(glm::vec3(kCubeScale, kCubeScale, kCubeScale));
+//  cube_->SetColor(0.7f, 0.7f, 0.7f);
+//  cube_->SetPosition(glm::vec3(0.0f, 0.0f, -2.0f));
 
   is_gl_initialized_ = true;
 }
@@ -295,13 +302,15 @@ void PlaneFittingApplication::SetRenderDebugPointCloud(bool on) {
 void PlaneFittingApplication::SetColorValue(int color_value) {
   __android_log_print(ANDROID_LOG_DEBUG, "ABC", "\n \"SetColorValue : %d \n", color_value);
 
-  if (color_value == 0) {
+  cube_color = color_value;
+  /*if (color_value == 0) {
     cube_->SetColor(1.0f, 0.0f, 0.0f);
   } else if (color_value == 1) {
     cube_->SetColor(0.0f, 1.0f, 0.0f);
   } else if (color_value == 2) {
     cube_->SetColor(0.0f, 0.0f, 1.0f);
-  }
+  }*/
+
 //  if (color_value == 0) {
 //    message = "0";
 //  } else if (color_value == 1) {
@@ -350,6 +359,48 @@ void PlaneFittingApplication::on_new_color(char* body) {
     __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"on_new_color (%d) : %s \n", -1, body);
 
   };
+
+}
+
+void PlaneFittingApplication::on_new_cube(char* body) {
+
+  __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"%s\n", body);
+
+  char *tokPtr;
+  tokPtr = strtok(body, ",");
+  float x_p = atof(tokPtr);
+  tokPtr = strtok (NULL, ",");
+  float y_p = atof(tokPtr);
+  tokPtr = strtok (NULL, ",");
+  float z_p = atof(tokPtr);
+
+  tokPtr = strtok(NULL, ",");
+  float x_r = atof(tokPtr);
+  tokPtr = strtok (NULL, ",");
+  float y_r = atof(tokPtr);
+  tokPtr = strtok (NULL, ",");
+  float z_r = atof(tokPtr);
+  tokPtr = strtok (NULL, ",");
+  float w_r = atof(tokPtr);
+
+  tokPtr = strtok (NULL, ",");
+  int cube_color_temp = atoi(tokPtr);
+
+  if (cube_color_temp == 0) {
+    cube_[cube_count]->SetColor(1.0f, 0.0f, 0.0f);
+  } else if (cube_color_temp == 1) {
+    cube_[cube_count]->SetColor(0.0f, 1.0f, 0.0f);
+  } else if (cube_color_temp == 2) {
+    cube_[cube_count]->SetColor(0.0f, 0.0f, 1.0f);
+  }
+
+  cube_[cube_count]->SetRotation(glm::quat(w_r, x_r, y_r, z_r));
+  cube_[cube_count]->SetPosition(glm::vec3((reference_point.x + x_p), (reference_point.y + y_p), (reference_point.z + z_p)));
+
+  cube_count++;
+
+  //__android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"x: %.3f y: %.3f z: %.3f \n", x,y,z);
+  //cube2_->SetPosition(glm::vec3(x, y, z));
 
 }
 
@@ -443,12 +494,15 @@ void PlaneFittingApplication::GLRender(
 
   glDisable(GL_BLEND);
 
-  cube_->Render(projection_matrix_ar_, color_camera_T_area_description);
+
+  for( int i = 0; i < cube_count; i++) {
+    cube_[i]->Render(projection_matrix_ar_, color_camera_T_area_description);
+  }
 }
 
 void PlaneFittingApplication::DeleteResources() {
   delete video_overlay_;
-  delete cube_;
+  //delete cube_;
   delete point_cloud_renderer_;
   video_overlay_ = nullptr;
   point_cloud_renderer_ = nullptr;
@@ -561,7 +615,7 @@ void PlaneFittingApplication::OnTouchEvent(float x, float y) {
   rotation_matrix[2] = normal_Z;
   const glm::quat rotation = glm::toQuat(rotation_matrix);
 
-    glm::vec3 test = glm::vec3(area_description_position) + plane_normal * kCubeScale;
+  //  glm::vec3 test = glm::vec3(area_description_position) + plane_normal * kCubeScale;
 
 //  __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"Area_Des_pos: x: %.3f\ty: %.3f\tz: %.3f\nplane_normal: x: %.3f\ty: %.3f\tz: %.3f\npos: x: %.3f\ty: %.3f\tz: %.3f  \n",
 //                      area_description_position.x, area_description_position.y, area_description_position.z,
@@ -578,15 +632,34 @@ void PlaneFittingApplication::OnTouchEvent(float x, float y) {
       reference_set = true;
       SetRenderDebugPointCloud(false);
       reference_point = glm::vec3(area_description_position);
+      __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"Set reference point \n");
       return;
     }
 
-    cube_->SetRotation(rotation);
-    cube_->SetPosition(glm::vec3(area_description_position) +
-                         plane_normal * kCubeScale);
+
+    if (cube_color == 0) {
+      cube_[cube_count]->SetColor(1.0f, 0.0f, 0.0f);
+    } else if (cube_color == 1) {
+      cube_[cube_count]->SetColor(0.0f, 1.0f, 0.0f);
+    } else if (cube_color == 2) {
+      cube_[cube_count]->SetColor(0.0f, 0.0f, 1.0f);
+    }
+
+    glm::vec3 new_pos = glm::vec3(area_description_position) + plane_normal * kCubeScale;
+    cube_[cube_count]->SetRotation(rotation);
+    cube_[cube_count]->SetPosition(new_pos);
+
+    __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"x: %.3f y: %.3f z: %.3f w: %.3f\n", rotation.x, rotation.y, rotation.z, rotation.w);
+
+    glm::quat rotationn = glm::quat(rotation.w, rotation.x, rotation.y, rotation.z);
+     __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"NEW x: %.3f y: %.3f z: %.3f w: %.3f\n", rotationn.x, rotationn.y, rotationn.z, rotationn.w);
+
+
+    cube_count++;
 
     std::stringstream ss;
-    ss << area_description_position.x <<  "," << area_description_position.y << "," << area_description_position.z;
+    ss << (new_pos.x - reference_point.x) <<  "," << (new_pos.y - reference_point.y) << "," << (new_pos.z - reference_point.z) << ","
+       << rotation.x <<  "," << rotation.y << "," << rotation.z << "," << rotation.w << "," << cube_color;
     std::string s = ss.str();
 
     client_socket.broadcast(2, 0, s);
@@ -630,4 +703,9 @@ glm::mat4 PlaneFittingApplication::GetAreaDescriptionTDepthTransform(
 void new_color_callback(char *body) {
   __android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"new_color_callback : %s \n", body);
   app.on_new_color(body);
+}
+
+void new_cube_callback(char *body) {
+  //__android_log_print(ANDROID_LOG_INFO, "ABC", "\n \"new_color_callback : %s \n", body);
+  app.on_new_cube(body);
 }

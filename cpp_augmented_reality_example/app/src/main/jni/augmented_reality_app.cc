@@ -124,6 +124,7 @@ void AugmentedRealityApp::OnCreate(JNIEnv* env, jobject activity,
   calling_activity_obj_ = env->NewGlobalRef(activity);
   jclass cls = env->GetObjectClass(activity);
   on_demand_render_ = env->GetMethodID(cls, "requestRender", "()V");
+  on_moon_update_ui_ = env->GetMethodID(cls, "updateMoonUI", "(I)V");
 
   is_service_connected_ = false;
   is_gl_initialized_ = false;
@@ -158,6 +159,7 @@ void AugmentedRealityApp::OnDestroy() {
 
   calling_activity_obj_ = nullptr;
   on_demand_render_ = nullptr;
+  on_moon_update_ui_ = nullptr;
 }
 
 void AugmentedRealityApp::TangoSetupConfig() {
@@ -526,6 +528,8 @@ void AugmentedRealityApp::RequestRender() {
   JNIEnv* env;
   java_vm_->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6);
   env->CallVoidMethod(calling_activity_obj_, on_demand_render_);
+//
+
 }
 
 void AugmentedRealityApp::UpdateTransform(const double transform[16],
@@ -683,6 +687,13 @@ void AugmentedRealityApp::EarthToggle(bool isChecked,  bool callback) {
     } else {
       client_socket.broadcast(2, 0, "false");
     }
+  } else {
+//    if (isChecked) {
+//      test = 1;
+//    } else {
+//      test = 2;
+//    }
+//    updateGUI = true;
   }
 }
 
@@ -695,6 +706,16 @@ void AugmentedRealityApp::MoonToggle(bool isChecked,  bool callback) {
     } else {
       client_socket.broadcast(3, 0, "false");
     }
+  } else {
+//    if (calling_activity_obj_ == nullptr || on_moon_update_ui_ == nullptr) {
+//      LOGE("Can not reference Activity to request render");
+//      return;
+//    }
+//
+//    // Here, we notify the Java activity that we'd like it to trigger a render.
+//    JNIEnv* env;
+//    java_vm_->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6);
+//    env->CallVoidMethod(calling_activity_obj_, on_moon_update_ui_);
   }
 }
 

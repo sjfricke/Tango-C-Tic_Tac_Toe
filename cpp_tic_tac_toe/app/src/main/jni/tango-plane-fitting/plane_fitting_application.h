@@ -82,6 +82,7 @@ public:
     void BroadCastColorValue(int color_value);
 
     void on_new_color(char* body);
+    void on_new_cube(char* body);
 
     // Configure the viewport of the GL view.
     void OnSurfaceChanged(int width, int height);
@@ -161,9 +162,11 @@ private:
 //  tango_gl::Mesh* c_object;
 //  tango_gl::Material* mido_material_;
 //  tango_gl::Texture* mido_texture_;
-    //tango_gl::Cube* cube_[10];
-    //int cube_count;
-    tango_gl::Cube* cube_;
+    tango_gl::Cube* cube_[64];
+    int cube_count;
+    int max_cube = 64;
+    int cube_color;
+
     // The dimensions of the render window.
     float screen_width_;
     float screen_height_;
@@ -199,5 +202,6 @@ private:
 
 extern tango_plane_fitting::PlaneFittingApplication app;
 void new_color_callback(char *body);
+void new_cube_callback(char *body);
 
 #endif  // TANGO_PLANE_FITTING_PLANE_FITTING_APPLICATION_H_

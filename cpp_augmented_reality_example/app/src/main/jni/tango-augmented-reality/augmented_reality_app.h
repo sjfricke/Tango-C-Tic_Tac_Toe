@@ -122,9 +122,14 @@ class AugmentedRealityApp {
   //
   void OnPointCloudAvailable(const TangoPointCloud* point_cloud);
 
+
+
 private:
   // Request the render function from Java layer.
   void RequestRender();
+
+  bool updateGUI = false;
+  jint test = 0;
 
   int websocket_connected = 1;
 
@@ -224,6 +229,8 @@ private:
   JavaVM* java_vm_;
   jobject calling_activity_obj_;
   jmethodID on_demand_render_;
+  jmethodID on_moon_update_ui_;
+
 
   std::atomic<bool> is_service_connected_;
   std::atomic<bool> is_gl_initialized_;

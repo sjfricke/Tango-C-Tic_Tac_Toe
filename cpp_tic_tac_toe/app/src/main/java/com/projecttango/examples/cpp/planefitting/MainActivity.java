@@ -23,6 +23,7 @@ import android.content.ComponentName;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.display.DisplayManager;
 import android.opengl.GLSurfaceView;
@@ -94,19 +95,27 @@ public class MainActivity extends Activity {
 
   public void setBlue(View view) {
     Log.w("LOG_TAG", "Need to print : 2");
-
+    findViewById(R.id.blue_button).setBackgroundColor(Color.BLUE);
+    findViewById(R.id.red_button).setBackgroundColor(Color.WHITE);
+    findViewById(R.id.green_button).setBackgroundColor(Color.WHITE);
     TangoJNINative.setColorValue(2);
   }
 
   public void setGreen(View view) {
 
     Log.w("LOG_TAG", "Need to print : 1");
+    findViewById(R.id.blue_button).setBackgroundColor(Color.WHITE);
+    findViewById(R.id.red_button).setBackgroundColor(Color.WHITE);
+    findViewById(R.id.green_button).setBackgroundColor(Color.GREEN);
     TangoJNINative.setColorValue(1);
   }
 
   public void setRed(View view) {
 
     Log.w("LOG_TAG", "Need to print : 0");
+    findViewById(R.id.blue_button).setBackgroundColor(Color.WHITE);
+    findViewById(R.id.red_button).setBackgroundColor(Color.RED);
+    findViewById(R.id.green_button).setBackgroundColor(Color.WHITE);
     TangoJNINative.setColorValue(0);
   }
 
@@ -144,6 +153,12 @@ public class MainActivity extends Activity {
     mDrawerLayout = (CustomDrawerLayout) findViewById(R.id.drawer_layout);
     configureSettingsButton();
     configureDrawerButton();
+
+
+    findViewById(R.id.blue_button).setBackgroundColor(Color.WHITE);
+    findViewById(R.id.red_button).setBackgroundColor(Color.RED);
+    findViewById(R.id.green_button).setBackgroundColor(Color.WHITE);
+
   }
 
   @Override
